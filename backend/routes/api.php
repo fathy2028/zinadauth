@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Public routes
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/login', [UserController::class, 'login']);
+
+// Protected routes (require JWT token)
+Route::middleware('auth:api')->group(function () {
+    Route::get('/profile', [UserController::class, 'profile']);
+    Route::post('/logout', [UserController::class, 'logout']);
+    Route::post('/refresh', [UserController::class, 'refresh']);
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
