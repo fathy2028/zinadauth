@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { RegisterRequest } from '../../models/user.model';
+import { MessageService } from '../../services/message.service';
+import { ToastService } from '../../services/toast.service';
+import { RegisterRequest, RegisterResponse } from '../../models/user.model';
 
 @Component({
   selector: 'app-register',
@@ -20,6 +22,8 @@ export class RegisterComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
+    private messageService: MessageService,
+    private toastService: ToastService,
     private router: Router
   ) {
     this.registerForm = this.formBuilder.group({
@@ -73,23 +77,36 @@ export class RegisterComponent implements OnInit {
     this.authService.register(registerData).subscribe({
       next: (response) => {
         if (response.status === 'success') {
-          this.successMessage = 'Registration successful! Redirecting to login...';
+          this.successMessage = `Registration successful! Please login with your email: ${registerData.email}`;
+
+          // Show success toast
+          this.toastService.showSuccess('Registration successful! Redirecting to login...');
+
+          // Set success message in service for login page
+          this.messageService.setRegistrationSuccess(registerData.email);
+
           setTimeout(() => {
             this.router.navigate(['/login']);
           }, 2000);
         } else {
           this.errorMessage = response.message || 'Registration failed';
+          this.toastService.showError(response.message || 'Registration failed');
         }
         this.isLoading = false;
       },
       error: (error) => {
+        let errorMsg: string;
+
         if (error.error && error.error.errors) {
           // Handle validation errors from backend
           const errors = error.error.errors;
-          this.errorMessage = Object.values(errors).flat().join(', ');
+          errorMsg = Object.values(errors).flat().join(', ');
         } else {
-          this.errorMessage = error.message || 'Registration failed. Please try again.';
+          errorMsg = error.message || 'Registration failed. Please try again.';
         }
+
+        this.errorMessage = errorMsg;
+        this.toastService.showError(errorMsg);
         this.isLoading = false;
       }
     });

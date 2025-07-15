@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { User, LoginRequest, RegisterRequest, AuthResponse, ApiResponse } from '../models/user.model';
+import { User, LoginRequest, RegisterRequest, AuthResponse, RegisterResponse, ApiResponse } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -66,8 +66,8 @@ export class AuthService {
   /**
    * Register new user
    */
-  register(userData: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/register`, userData)
+  register(userData: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.API_URL}/register`, userData)
       .pipe(
         catchError(this.handleError)
       );

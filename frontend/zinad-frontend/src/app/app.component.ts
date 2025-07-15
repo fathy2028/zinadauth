@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { ToastComponent } from './components/toast/toast.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HttpClientModule],
+  imports: [RouterOutlet, HttpClientModule, ToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

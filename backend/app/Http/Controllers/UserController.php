@@ -80,18 +80,30 @@ class UserController extends Controller
             $validatedData = $request->validated();
 
             $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'password' => Hash::make($validatedData['password']),
             ]);
+
+            // Remove sensitive data from response
+            $userData = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ];
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'User created successfully',
-                'data' => $user
+                'data' => $userData
             ], 201);
 
         } catch (\Exception $e) {
+            $this->logSecurityEvent('Registration failed with exception', $request, [
+                'error' => $e->getMessage()
+            ]);
 
             return response()->json([
                 'status' => 'error',

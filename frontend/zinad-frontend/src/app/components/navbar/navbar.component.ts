@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 import { User } from '../../models/user.model';
 
 @Component({
@@ -19,6 +20,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
+    private toastService: ToastService,
     private router: Router
   ) {}
 
@@ -54,14 +56,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.closeDropdown();
     this.authService.logout().subscribe({
       next: () => {
-        this.router.navigate(['/login']);
+        this.toastService.showSuccess('Logged out successfully. See you soon!');
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 1000);
       },
       error: (error) => {
         console.error('Logout error:', error);
+        this.toastService.showWarning('Logged out locally. Please check your connection.');
         // Even if logout fails on server, clear local data and redirect
         localStorage.removeItem('auth_token');
         localStorage.removeItem('auth_user');
-        this.router.navigate(['/login']);
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 1500);
       }
     });
   }

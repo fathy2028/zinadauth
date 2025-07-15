@@ -30,6 +30,13 @@ export interface AuthResponse {
   errors?: any;
 }
 
+export interface RegisterResponse {
+  status: string;
+  message: string;
+  data?: User;
+  errors?: any;
+}
+
 export interface ApiResponse<T = any> {
   status: string;
   message: string;

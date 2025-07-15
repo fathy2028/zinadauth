@@ -52,6 +52,11 @@
         </div>
       </div>
 
+      <!-- Success Message -->
+      <div class="alert alert-success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
       <!-- Error Message -->
       <div class="alert alert-danger" *ngIf="errorMessage">
         {{ errorMessage }}
