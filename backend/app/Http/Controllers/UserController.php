@@ -12,6 +12,9 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
+use App\Actions\Auth\CreateUserAction;
 
 class UserController extends Controller
 {
@@ -37,9 +40,7 @@ class UserController extends Controller
         return trim($sanitized);
     }
 
-    /**
-     * Check rate limiting for authentication attempts
-     */
+     // Use throttle middleware for login route
     private function checkRateLimit(Request $request, $key, $maxAttempts = 5, $decayMinutes = 15)
     {
         $rateLimitKey = $key . '|' . $request->ip();
@@ -74,125 +75,31 @@ class UserController extends Controller
         ], $details));
     }
 
-    public function register(Request $request)
-    {
+    public function register(RegisterRequest $request) {
         try {
-            // Check rate limiting for registration attempts
-            $rateLimitResponse = $this->checkRateLimit($request, 'register', 3, 60);
-            if ($rateLimitResponse) {
-                return $rateLimitResponse;
-            }
+            $validatedData = $request->validated();
 
-            // Validate and sanitize the request data
-            $validator = Validator::make($request->all(), [
-                'name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    'min:2',
-                    'regex:/^[a-zA-Z\s]+$/', // Only letters and spaces
-                ],
-                'email' => [
-                    'required',
-                    'string',
-                    'email:rfc,dns', // Strict email validation
-                    'max:255',
-                    'unique:users,email',
-                ],
-                'password' => [
-                    'required',
-                    'string',
-                    Password::min(8)
-                        ->letters()
-                        ->mixedCase()
-                        ->numbers()
-                        ->symbols()
-                        ->uncompromised(),
-                ],
-            ]);
-
-            if ($validator->fails()) {
-                RateLimiter::hit('register|' . $request->ip());
-                $this->logSecurityEvent('Registration validation failed', $request, [
-                    'errors' => $validator->errors()->toArray()
-                ]);
-
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $validatedData = $validator->validated();
-
-            // Sanitize input data
-            $sanitizedData = [
-                'name' => $this->sanitizeInput($validatedData['name']),
-                'email' => strtolower(trim($validatedData['email'])),
-                'password' => $validatedData['password'] // Don't sanitize password
-            ];
-
-            // Double-check for duplicate email with case-insensitive search
-            $existingUser = User::whereRaw('LOWER(email) = ?', [strtolower($sanitizedData['email'])])->first();
-
-            if ($existingUser) {
-                RateLimiter::hit('register|' . $request->ip());
-                $this->logSecurityEvent('Registration attempt with existing email', $request, [
-                    'email' => $sanitizedData['email']
-                ]);
-
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Email already exists'
-                ], 409);
-            }
-
-            // Create the user with sanitized data
             $user = User::create([
-                'name' => $sanitizedData['name'],
-                'email' => $sanitizedData['email'],
-                'password' => Hash::make($sanitizedData['password'])
-            ]);
-
-            // Remove sensitive data from response
-            $userData = $user->toArray();
-            unset($userData['password'], $userData['remember_token']);
-
-            $this->logSecurityEvent('User registered successfully', $request, [
-                'user_id' => $user->id,
-                'email' => $user->email
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
             ]);
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'User created successfully',
-                'data' => $userData
+                'data' => $user
             ], 201);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            RateLimiter::hit('register|' . $request->ip());
-            $this->logSecurityEvent('Registration validation exception', $request, [
-                'errors' => $e->errors()
-            ]);
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
         } catch (\Exception $e) {
-            RateLimiter::hit('register|' . $request->ip());
-            $this->logSecurityEvent('Registration failed with exception', $request, [
-                'error' => $e->getMessage()
-            ]);
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'User registration failed. Please try again later.'
+                'message' => 'User registration failed. Please try again later.',
             ], 500);
         }
     }
+
 
     public function login(Request $request)
     {
