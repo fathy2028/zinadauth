@@ -17,7 +17,7 @@ use App\Http\Controllers\UserController;
 
 // Public routes
 Route::post('/register', [UserController::class, 'register'])->middleware('throttle:3,1');
-Route::post('/login', [UserController::class, 'login'])->middleware('throttle:3,1');
+Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:api');
 
 // Protected routes (require JWT token)
