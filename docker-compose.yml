@@ -46,8 +46,6 @@ services:
       dockerfile: ./frontend/zinad-frontend/Dockerfile
       network: host
     container_name: zinadauth_frontend
-    volumes:
-      - ./frontend/zinad-frontend:/app
     ports:
       - "4200:80"
     depends_on:

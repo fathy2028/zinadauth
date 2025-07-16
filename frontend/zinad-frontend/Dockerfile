@@ -1,16 +1,18 @@
-FROM node:18-alpine AS angular
+FROM node:18-alpine AS build
 
-WORKDIR /usr/local/app
+WORKDIR /app
 
-COPY frontend/zinad-frontend/ /usr/local/app/
+COPY frontend/zinad-frontend/package.json frontend/zinad-frontend/package-lock.json ./
 
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm npm ci
+
+COPY frontend/zinad-frontend/ .
 
 RUN npm run build
 
 FROM nginx:alpine
 
-COPY --from=angular /usr/local/app/dist/zinad-frontend /usr/share/nginx/html
+COPY --chown=nginx:nginx --from=build /app/dist/zinad-frontend/browser /usr/share/nginx/html
 
 COPY docker/nginx/frontend.conf /etc/nginx/conf.d/default.conf
 
