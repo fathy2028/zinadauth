@@ -1,0 +1,62 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: zinadauth_mysql
+    env_file:
+      - .mysql.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - zinadauth_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      network: host
+    container_name: zinadauth_backend
+    depends_on:
+      - mysql
+    volumes:
+      - ./backend:/var/www/html
+      - ./backend/.env:/var/www/html/.env
+    env_file:
+      - .laravel.env
+    networks:
+      - zinadauth_network
+
+  nginx_backend:
+    image: nginx:alpine
+    container_name: zinadauth_nginx_backend
+    ports:
+      - "8000:80"
+    volumes:
+      - ./backend:/var/www/html
+      - ./docker/nginx/backend.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - zinadauth_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/zinad-frontend/Dockerfile
+      network: host
+    container_name: zinadauth_frontend
+    volumes:
+      - ./frontend/zinad-frontend:/app
+    ports:
+      - "4200:80"
+    depends_on:
+      - nginx_backend
+    networks:
+      - zinadauth_network
+
+volumes:
+  mysql_data:
+
+networks:
+  zinadauth_network:
