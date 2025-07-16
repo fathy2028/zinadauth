@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
@@ -71,12 +72,14 @@ class UserController extends Controller
             ];
 
             // Attempt to create a token
-            if (!$token = Auth::attempt($credentials)) {
+            $token = Auth::guard('api')->attempt($credentials);
+            if (!$token) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Invalid credentials'
                 ], 401);
             }
+
 
             // Get the authenticated user
             $user = auth()->user();
@@ -126,13 +129,6 @@ class UserController extends Controller
     {
         try {
             $token = JWTAuth::getToken();
-
-            if (!$token) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Token not provided'
-                ], 400);
-            }
 
             JWTAuth::invalidate($token);
 
