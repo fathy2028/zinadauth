@@ -80,9 +80,8 @@ class UserController extends Controller
                 ], 401);
             }
 
-
             // Get the authenticated user
-            $user = auth()->user();
+            $user = Auth::guard('api')->user();            
             $userData = [
                 'id' => $user->id,
                 'name' => $user->name,
