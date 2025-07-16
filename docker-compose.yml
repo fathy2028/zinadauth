@@ -3,7 +3,7 @@ services:
     image: mysql:8.0
     container_name: zinadauth_mysql
     env_file:
-      - .mysql.env
+      - .env
     ports:
       - "3306:3306"
     volumes:
@@ -22,8 +22,12 @@ services:
     volumes:
       - ./backend:/var/www/html
       - ./backend/.env:/var/www/html/.env
-    env_file:
-      - .laravel.env
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_DATABASE=${MYSQL_DATABASE}
+      - DB_USERNAME=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
     networks:
       - zinadauth_network
 
