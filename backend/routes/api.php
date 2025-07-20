@@ -17,12 +17,10 @@ use App\Http\Controllers\UserController;
 
 // Public routes
 Route::post('/register', [UserController::class, 'register'])->middleware('throttle:3,1');
-Route::post('/login', [UserController::class, 'login']);
-Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:api');
+Route::post('/login', [UserController::class, 'login'])->name('login');
 
 // Protected routes (require JWT token)
 Route::middleware('auth:api')->group(function () {
-    Route::get('/profile', [UserController::class, 'profile']);
     Route::post('/logout', [UserController::class, 'logout']);
     Route::post('/refresh', [UserController::class, 'refresh']);
     Route::get('/user', function (Request $request) {
