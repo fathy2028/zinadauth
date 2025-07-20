@@ -14,12 +14,16 @@ cd backned
 
 cp .env.example .env
 ```
-5. build and up the docker images.
+5. install composer dependencies.
+```shell
+composer install
+```
+6. build and up the docker images.
 ```shell
 docker-compose build
 
 docker-compose up -d
 ```
-6. run the application:
+7. run the application:
   - the backend: [http://localhost:8000](http://localhost:8000)
   - the frontend: [http://localhost:4200](http://localhost:4200)
