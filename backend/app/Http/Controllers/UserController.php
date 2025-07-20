@@ -2,59 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Auth;
+
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
-use App\Actions\Auth\CreateUserAction;
-use Illuminate\Validation\ValidationException;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Http\Resources\UserResource;
+use App\Http\Responses\ApiResponse;
+use Exception;
 
 class UserController extends Controller
 {
+    protected $userRepository;
 
-    public function register(RegisterRequest $request) {
+    public function __construct(UserRepositoryInterface $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
+    public function register(RegisterRequest $request)
+    {
         try {
             $validatedData = $request->validated();
 
-            $user = User::create([
-                'name' => $validatedData['name'],
-                'email' => $validatedData['email'],
-                'password' => Hash::make($validatedData['password']),
-            ]);
+            $user = $this->userRepository->create($validatedData);
 
-            // Remove sensitive data from response
-            $userData = [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at
-            ];
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'User created successfully',
-                'data' => $userData
-            ], 201);
-
-        } catch (\Exception $e) {
-            $this->logSecurityEvent('Registration failed with exception', $request, [
-                'error' => $e->getMessage()
-            ]);
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'User registration failed. Please try again later.',
-            ], 500);
+            return ApiResponse::success(new UserResource($user), 'User created successfully', 201);
+        } catch (Exception $e) {
+            return ApiResponse::error('Registration failed', 500, ['exception' => $e->getMessage()]);
         }
     }
 
@@ -62,62 +37,24 @@ class UserController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-            // Validate request data
             $validatedData = $request->validated();
 
-            // Sanitize credentials
-            $credentials = [
-                'email' => strtolower(trim($validatedData['email'])),
-                'password' => $validatedData['password'] // Don't sanitize password
-            ];
+            $response = $this->userRepository->login($validatedData);
 
-            // Attempt to create a token
-            $token = Auth::guard('api')->attempt($credentials);
-            if (!$token) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Invalid credentials'
-                ], 401);
+            if ($response['success']) {
+                return ApiResponse::success([
+                    'token' => $response['token'],
+                    'user' => new UserResource($response['user']),
+                ], 'Login successful', $response['status']);
+            } else {
+                return ApiResponse::error($response['message'], $response['status']);
             }
-
-            // Get the authenticated user
-            $user = Auth::guard('api')->user();            
-            $userData = [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'email_verified_at' => $user->email_verified_at,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at
-            ];
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Login successful',
-                'data' => [
-                    'user' => $userData,
-                    'token' => $token,
-                    'token_type' => 'bearer',
-                    'expires_in' => config('jwt.ttl') * 60
-                ]
-            ]);
-
-        } catch (JWTException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Authentication service temporarily unavailable'
-            ], 500);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Login failed. Please try again later.'
-            ], 500);
+        } catch (Exception $e) {
+            return ApiResponse::error(
+                'Login failed',
+                500,
+                ['exception' => $e->getMessage()]
+            );
         }
     }
 
@@ -127,19 +64,24 @@ class UserController extends Controller
     public function logout()
     {
         try {
-            $token = JWTAuth::getToken();
+            $response = $this->userRepository->logout();
 
-            JWTAuth::invalidate($token);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Successfully logged out'
-            ]);
+            return ApiResponse::success(
+                null,
+                $response->getData()->message,
+                $response->getStatusCode()
+            );
         } catch (JWTException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to logout. Please try again later.'
-            ], 500);
+            return ApiResponse::error(
+                'Failed to logout. Invalid token.',
+                401
+            );
+        } catch (Exception $e) {
+            return ApiResponse::error(
+                'Logout failed',
+                500,
+                ['exception' => $e->getMessage()]
+            );
         }
     }
 
@@ -147,36 +89,31 @@ class UserController extends Controller
     /**
      * Refresh JWT token
      */
-    public function refresh(Request $request)
+    public function refresh()
     {
         try {
-            $user = auth()->user();
-            $userId = $user ? $user->id : null;
+            $token = $this->userRepository->refresh();
 
-            $token = JWTAuth::refresh(JWTAuth::getToken());
-
-            $this->logSecurityEvent('Token refreshed successfully', $request, [
-                'user_id' => $userId
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'data' => [
+            return ApiResponse::success(
+                [
                     'token' => $token,
                     'token_type' => 'bearer',
                     'expires_in' => config('jwt.ttl') * 60
-                ]
-            ]);
+                ],
+                'Token refreshed successfully',
+                200
+            );
         } catch (JWTException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Token cannot be refreshed'
-            ], 401);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Token refresh failed'
-            ], 500);
+            return ApiResponse::error(
+                'Failed to refresh token. Invalid or expired token.',
+                401
+            );
+        } catch (Exception $e) {
+            return ApiResponse::error(
+                'Token refresh failed',
+                500,
+                ['exception' => $e->getMessage()]
+            );
         }
     }
 }
