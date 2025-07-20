@@ -10,7 +10,7 @@ cp .env.example .env
 ```
 4. copy the .env.example file (in the backend directory) and fill it.
 ```shell
-cd backned
+cd backend
 
 cp .env.example .env
 ```
