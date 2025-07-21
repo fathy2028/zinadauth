@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('content_workshops', function (Blueprint $table) {
+            $table->char('id', 36)->default('uuid()')->primary();
+            $table->char('content_id', 36)->nullable()->index('content_id');
+            $table->char('workshop_id', 36)->nullable()->index('workshop_id');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('content_workshops');
+    }
+};
