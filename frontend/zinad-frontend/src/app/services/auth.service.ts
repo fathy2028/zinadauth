@@ -79,7 +79,7 @@ export class AuthService {
   logout(): Observable<ApiResponse> {
     const headers = this.getAuthHeaders();
 
-    return this.http.post<ApiResponse>(`${this.API_URL}/logout`, {}, { headers })
+    return this.http.delete<ApiResponse>(`${this.API_URL}/logout`, { headers })
       .pipe(
         tap(() => {
           this.clearAuthData();

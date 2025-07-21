@@ -21,7 +21,7 @@ Route::post('/login', [UserController::class, 'login'])->name('login');
 
 // Protected routes (require JWT token)
 Route::middleware('auth:api')->group(function () {
-    Route::post('/logout', [UserController::class, 'logout']);
+    Route::delete('/logout', [UserController::class, 'logout']);
     Route::post('/refresh', [UserController::class, 'refresh']);
     Route::get('/user', function (Request $request) {
         return $request->user();
