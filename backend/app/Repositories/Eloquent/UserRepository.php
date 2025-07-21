@@ -8,8 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 
-class UserRepository implements UserRepositoryInterface
+class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
+    public function __construct()
+    {
+        parent::__construct(new User());
+    }
     public function create(array $data): User
     {
         $data['password'] = Hash::make($data['password']);
@@ -47,9 +51,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function refresh()
     {
-        $user = auth()->user();
-        $userId = $user ? $user->id : null;
-
         $token = JWTAuth::refresh(JWTAuth::getToken());
+        return $token;
     }
 }
