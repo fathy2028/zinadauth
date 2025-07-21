@@ -8,10 +8,27 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Spatie\Permission\Traits\HasRoles;
+use App\Traits\HasRolePermissions;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasRolePermissions;
+
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The data type of the auto-incrementing ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +39,15 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'user_name',
+        'image',
+        'type',
+        'theme',
+        'user_id',
+        'web_engine',
+        'is_active',
+        'is_deleted',
+        'last_signed_in',
     ];
 
     /**
@@ -41,6 +67,11 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'last_signed_in' => 'datetime',
+        'is_active' => 'boolean',
+        'is_deleted' => 'boolean',
+        'id' => 'string',
+        'user_id' => 'string',
     ];
 
     /**
@@ -61,5 +92,19 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = Str::uuid();
+            }
+        });
     }
 }
