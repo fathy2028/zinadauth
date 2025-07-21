@@ -82,6 +82,10 @@ echo Step 13: Running migrations...
 docker exec zinadauth_backend php artisan migrate --force
 
 echo.
+echo Step 14: Running database seeders (Roles and Permissions)...
+docker exec zinadauth_backend php artisan db:seed --class=RolePermissionSeeder
+
+echo.
 echo ========================================
 echo Database Fix Complete!
 echo ========================================
@@ -101,6 +105,18 @@ echo.
 echo Services available at:
 echo - Frontend: http://localhost:4200
 echo - Backend:  http://localhost:8000
+echo.
+echo Default test users created:
+echo - Super Admin: superadmin@zinadauth.com (password123)
+echo - Admin: admin@zinadauth.com (password123)
+echo - Educational Director: director@zinadauth.com (password123)
+echo - Department Head: depthead@zinadauth.com (password123)
+echo - Facilitator: facilitator@zinadauth.com (password123)
+echo - Content Creator: creator@zinadauth.com (password123)
+echo - Participant: participant@zinadauth.com (password123)
+echo.
+echo Roles and Permissions system is ready!
+echo Run 'docker exec zinadauth_backend php artisan test:roles-permissions' to verify.
 echo.
 
 pause
