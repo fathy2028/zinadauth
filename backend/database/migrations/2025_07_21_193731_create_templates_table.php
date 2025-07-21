@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('templates', function (Blueprint $table) {
-            $table->char('id', 36)->default('uuid()')->primary();
-            $table->timestamp('created_at')->nullable()->useCurrent();
-            $table->text('title')->nullable();
+            $table->uuid('id')->primary();
+            $table->text('title');
             $table->text('title_ar')->nullable();
             $table->text('description')->nullable();
             $table->text('description_ar')->nullable();
-            $table->char('setting_id', 36)->nullable()->index('setting_id');
+            $table->uuid('setting_id')->nullable()->index('setting_id');
+            $table->timestamps();
         });
     }
 

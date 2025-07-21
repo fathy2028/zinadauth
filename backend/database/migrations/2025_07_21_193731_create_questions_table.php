@@ -12,18 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('questions', function (Blueprint $table) {
-            $table->char('id', 36)->default('uuid()')->primary();
-            $table->timestamp('created_at')->nullable()->useCurrent();
-            $table->text('question_text')->nullable();
+            $table->uuid('id')->primary();
+            $table->text('question_text');
             $table->text('question_text_ar')->nullable();
             $table->json('choices')->nullable();
             $table->json('choices_ar')->nullable();
-            $table->enum('type', ['single_choice', 'multiple_choice', 'text', 'code'])->nullable();
+            $table->enum('type', \App\Enums\QuestionTypeEnum::values())->nullable();
             $table->char('created_by', 36)->nullable()->index('created_by');
             $table->bigInteger('points')->nullable()->default(0);
             $table->integer('duration')->nullable()->default(3);
             $table->smallInteger('answer')->nullable();
             $table->text('text_answer')->nullable();
+            $table->timestamps();
         });
     }
 

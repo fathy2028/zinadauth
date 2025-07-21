@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('assignment_questions', function (Blueprint $table) {
-            $table->char('id', 36)->default('uuid()')->primary();
+            $table->uuid('id')->primary();
             $table->char('assignment_id', 36)->nullable()->index('assignment_id');
             $table->char('question_id', 36)->nullable()->index('question_id');
-            $table->decimal('question_order', 10)->nullable()->default(0);
+            $table->integer('question_order')->nullable()->default(0);
+            $table->timestamps();
         });
     }
 

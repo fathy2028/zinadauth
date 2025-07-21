@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('choices', function (Blueprint $table) {
-            $table->char('id', 36)->default('uuid()')->primary();
-            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->uuid('id')->primary();
             $table->json('choices')->nullable();
             $table->json('choices_ar')->nullable();
-            $table->enum('type', ['standard', 'custom'])->nullable();
+            $table->enum('type', \App\Enums\ChoiceTypeEnum::values())->nullable();
             $table->integer('duration')->nullable()->default(3);
+            $table->timestamps();
         });
     }
 

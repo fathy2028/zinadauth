@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\WorkshopStatusTypeEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,18 +13,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('workshops', function (Blueprint $table) {
-            $table->char('id', 36)->default('uuid()')->primary();
-            $table->timestamp('created_at')->nullable()->useCurrent();
-            $table->text('title')->nullable();
-            $table->text('description')->nullable();
+            $table->uuid('id')->primary();
+            $table->text('title');
+            $table->text('description');
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
-            $table->char('created_by', 36)->nullable()->index('created_by');
-            $table->char('setting_id', 36)->nullable()->index('setting_id');
-            $table->boolean('is_deleted')->nullable()->default(false);
-            $table->boolean('qr_status')->nullable()->default(true);
-            $table->enum('status', ['active', 'inactive', 'loading'])->nullable()->default('inactive');
+            $table->uuid('created_by')->nullable()->index('created_by');
+            $table->uuid('setting_id')->nullable()->index('setting_id');
+            $table->boolean('is_deleted')->default(false);
+            $table->boolean('qr_status')->default(true);
+            $table->enum('status', WorkshopStatusTypeEnum::values())->nullable()->default(WorkshopStatusTypeEnum::INACTIVE->value);
             $table->integer('pin_code')->nullable();
+            $table->timestamps();
         });
     }
 

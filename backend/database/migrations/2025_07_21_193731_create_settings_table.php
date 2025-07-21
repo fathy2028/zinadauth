@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('settings', function (Blueprint $table) {
-            $table->char('id', 36)->default('uuid()')->primary();
-            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->uuid('id')->primary();
             $table->text('client')->nullable();
             $table->text('logo')->nullable();
             $table->text('primary_color')->nullable();
@@ -22,7 +21,8 @@ return new class extends Migration
             $table->text('dark_secondary_color')->nullable();
             $table->text('lang')->nullable();
             $table->text('domain_name')->nullable();
-            $table->decimal('duration', 10)->nullable()->default(0.5);
+            $table->double('duration')->default(0.5);
+            $table->timestamps();
         });
     }
 

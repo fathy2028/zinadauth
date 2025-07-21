@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contents', function (Blueprint $table) {
-            $table->char('id', 36)->default('uuid()')->primary();
-            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->uuid('id')->primary();
             $table->text('title')->nullable();
             $table->text('brief')->nullable();
             $table->text('ppt')->nullable();
             $table->char('created_by', 36)->index('created_by');
+            $table->timestamps();
         });
     }
 
