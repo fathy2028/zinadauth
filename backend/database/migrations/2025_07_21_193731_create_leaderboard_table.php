@@ -12,18 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('leaderboard', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->char('user_id', 36)->nullable();
-            $table->char('id', 36)->nullable();
-            $table->timestamp('created_at')->nullable();
             $table->char('assignment_id', 36)->nullable();
-            $table->char('workshops_id', 36)->nullable();
+            $table->char('workshop_id', 36)->nullable();
             $table->string('status')->nullable();
             $table->string('assignment_type')->nullable();
-            $table->boolean('qr_status')->nullable();
-            $table->decimal('order', 10)->nullable();
+            $table->boolean('qr_status')->default(false);
+            $table->integer('order')->default(0);
             $table->integer('pin_code')->nullable();
             $table->decimal('total_points', 10)->nullable();
             $table->bigInteger('rank')->nullable();
+            $table->timestamps();
         });
     }
 

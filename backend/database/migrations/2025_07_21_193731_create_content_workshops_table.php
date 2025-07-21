@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('content_workshops', function (Blueprint $table) {
-            $table->char('id', 36)->default('uuid()')->primary();
+            $table->uuid('id')->primary();
             $table->char('content_id', 36)->nullable()->index('content_id');
             $table->char('workshop_id', 36)->nullable()->index('workshop_id');
+            $table->timestamps();
         });
     }
 

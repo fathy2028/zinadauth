@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attempts', function (Blueprint $table) {
-            $table->char('id', 36)->default('uuid()')->primary();
-            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->uuid('id')->primary();
             $table->text('text_answer')->nullable();
             $table->smallInteger('choice_answer')->nullable();
             $table->char('question_id', 36)->nullable()->index('question_id');
@@ -21,6 +20,7 @@ return new class extends Migration
             $table->char('assignment_workshop_id', 36)->nullable()->index('assignment_workshop_id');
             $table->json('result')->nullable();
             $table->integer('step')->nullable();
+            $table->timestamps();
         });
     }
 

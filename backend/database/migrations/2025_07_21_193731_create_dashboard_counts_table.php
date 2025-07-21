@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dashboard_counts', function (Blueprint $table) {
-            $table->integer('id')->nullable();
+            $table->id();
             $table->bigInteger('admin_count')->nullable();
             $table->bigInteger('participant_count')->nullable();
             $table->bigInteger('facilitator_count')->nullable();
