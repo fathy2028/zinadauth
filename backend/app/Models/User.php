@@ -13,7 +13,6 @@ use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 use App\Traits\HasRolePermissions;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class User extends Authenticatable implements JWTSubject
 {

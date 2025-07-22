@@ -42,4 +42,18 @@ class Workshop extends Model
                 use HasUuids;
             })->withPivot(['status']);
     }
+
+    public function assignments(): BelongsToMany
+    {
+        return $this->belongsToMany(Assignment::class, 'assignment_workshops')
+            ->using(new class extends Pivot {
+                use HasUuids;
+            })->withPivot([
+                'status',
+                'assignment_type',
+                'qr_status',
+                'order_num',
+                'pin_code'
+            ]);
+    }
 }
