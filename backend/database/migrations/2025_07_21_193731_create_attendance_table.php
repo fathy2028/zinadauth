@@ -13,8 +13,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attendance', function (Blueprint $table) {
-            $table->char('user_id', 36);
-            $table->char('workshop_id', 36);
+            $table->uuid('user_id');
+            $table->uuid('workshop_id');
             $table->integer('pin_code');
             $table->enum('status', AttendanceTypeEnum::values())->default(AttendanceTypeEnum::NOT_EXIST->value);
             $table->timestamps();

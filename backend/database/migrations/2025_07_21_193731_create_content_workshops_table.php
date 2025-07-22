@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('content_workshops', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->char('content_id', 36)->index('content_id');
-            $table->char('workshop_id', 36)->index('workshop_id');
+            $table->uuid('content_id')->index('content_id');
+            $table->uuid('workshop_id')->index('workshop_id');
             $table->timestamps();
         });
     }

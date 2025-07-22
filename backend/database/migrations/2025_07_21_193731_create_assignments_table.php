@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('title');
             $table->text('description');
             $table->enum('question_order', AssignmentQuestionOrderEnum::values())->default(AssignmentQuestionOrderEnum::ORDERED->value);
-            $table->char('created_by', 36);
+            $table->uuid('created_by');
             $table->timestamps();
         });
     }

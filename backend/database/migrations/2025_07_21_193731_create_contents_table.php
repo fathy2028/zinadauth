@@ -16,7 +16,7 @@ return new class extends Migration
             $table->text('title');
             $table->text('brief');
             $table->text('ppt');
-            $table->char('created_by', 36)->index('created_by');
+            $table->uuid('created_by')->index('created_by');
             $table->timestamps();
         });
     }

@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('assignment_workshops', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->char('assignment_id', 36);
-            $table->char('workshop_id', 36);
+            $table->uuid('assignment_id');
+            $table->uuid('workshop_id');
             $table->enum('status', WorkshopStatusTypeEnum::values())->default(WorkshopStatusTypeEnum::INACTIVE->value);
             $table->enum('assignment_type', AssignmentWorkshopTypeEnum::values())->default(AssignmentWorkshopTypeEnum::INTERACTIVE->value);
             $table->boolean('qr_status')->default(true);

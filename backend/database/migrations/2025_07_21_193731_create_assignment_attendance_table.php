@@ -12,8 +12,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('assignment_attendance', function (Blueprint $table) {
-            $table->char('user_id', 36);
-            $table->char('assignment_workshop_id', 36)->index('assignment_workshop_id');
+            $table->uuid('user_id');
+            $table->uuid('assignment_workshop_id')->index('assignment_workshop_id');
             $table->integer('pin_code')->nullable();
             $table->enum('status', AttendanceTypeEnum::values())->nullable()->default(AttendanceTypeEnum::NOT_EXIST->value);
             $table->timestamps();
