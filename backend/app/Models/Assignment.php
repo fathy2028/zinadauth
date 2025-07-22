@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Enums\AssignmentQuestionOrderEnum;
-use App\Traits\HasCreatedBy;
-use App\Traits\HasUuid;
+use App\Support\Traits\HasCreatedBy;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 class Assignment extends Model
 {
-    use HasUuid, HasCreatedBy;
+    use HasUuids, HasCreatedBy;
 
     /**
      * The attributes that are mass assignable.
