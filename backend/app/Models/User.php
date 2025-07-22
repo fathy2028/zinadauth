@@ -10,11 +10,11 @@ use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 use App\Support\Traits\HasRolePermissions;
-use App\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasRolePermissions, HasUuid;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasRolePermissions, HasUuids;
 
     /**
      * The attributes that are mass assignable.
