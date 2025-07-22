@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('assignment_questions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->char('assignment_id', 36)->nullable()->index('assignment_id');
-            $table->char('question_id', 36)->nullable()->index('question_id');
-            $table->integer('question_order')->nullable()->default(0);
+            $table->char('assignment_id', 36);
+            $table->char('question_id', 36);
+            $table->integer('question_order')->default(0);
             $table->timestamps();
         });
     }

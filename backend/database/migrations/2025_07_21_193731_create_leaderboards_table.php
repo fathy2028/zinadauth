@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('leaderboards', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('user_id')->nullable();
-            $table->uuid('assignment_id')->nullable();
-            $table->uuid('workshop_id')->nullable();
-            $table->string('status')->nullable();
-            $table->string('assignment_type')->nullable();
+            $table->uuid('user_id');
+            $table->uuid('assignment_id');
+            $table->uuid('workshop_id');
+            $table->string('status');
+            $table->string('assignment_type');
             $table->boolean('qr_status')->default(false);
             $table->integer('order')->default(0);
-            $table->integer('pin_code')->nullable();
-            $table->decimal('total_points', 10)->nullable();
-            $table->bigInteger('rank')->nullable();
+            $table->integer('pin_code');
+            $table->decimal('total_points', 10);
+            $table->bigInteger('rank');
             $table->timestamps();
         });
     }

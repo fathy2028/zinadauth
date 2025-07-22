@@ -14,9 +14,9 @@ return new class extends Migration
     {
         Schema::create('user_workshops', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('user_id')->nullable()->index('user_id');
-            $table->uuid('workshop_id')->nullable()->index('workshop_id');
-            $table->enum('status', AttendanceTypeEnum::values())->nullable()->default(AttendanceTypeEnum::NOT_ATTEND->value);
+            $table->uuid('user_id');
+            $table->uuid('workshop_id');
+            $table->enum('status', AttendanceTypeEnum::values())->default(AttendanceTypeEnum::NOT_ATTEND->value);
         });
     }
 
