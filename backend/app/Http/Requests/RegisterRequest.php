@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use App\Enums\UserTypeEnum;
 
 class RegisterRequest extends FormRequest
 {
@@ -21,23 +22,26 @@ class RegisterRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = $this->route('id'); // Get user ID for updates
+        $isUpdate = !empty($userId); // Check if this is an update operation
+
         return [
             'name' => [
-                'required',
+                $isUpdate ? 'sometimes' : 'required',
                 'string',
                 'max:255',
                 'min:2',
                 'regex:/^[a-zA-Z\s]+$/', // Only letters and spaces
             ],
             'email' => [
-                'required',
+                $isUpdate ? 'sometimes' : 'required',
                 'string',
                 'email:rfc', // Strict email validation
                 'max:255',
-                'unique:users,email',
+                $isUpdate ? "unique:users,email,{$userId}" : 'unique:users,email',
             ],
             'password' => [
-                'required',
+                $isUpdate ? 'nullable' : 'required',
                 'string',
                 'min:8',
                 'max:255',
@@ -46,13 +50,13 @@ class RegisterRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:255',
-                'unique:users,user_name',
+                $isUpdate ? "unique:users,user_name,{$userId}" : 'unique:users,user_name',
                 'regex:/^[a-zA-Z0-9_]+$/', // Only letters, numbers, and underscores
             ],
             'type' => [
                 'nullable',
                 'string',
-                'in:admin,participant,facilitator',
+                'in:' . implode(',', array_column(UserTypeEnum::cases(), 'value')),
             ],
             'theme' => [
                 'nullable',
@@ -68,6 +72,14 @@ class RegisterRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:255',
+            ],
+            'is_active' => [
+                'nullable',
+                'boolean',
+            ],
+            'is_deleted' => [
+                'nullable',
+                'boolean',
             ],
         ];
     }
@@ -94,37 +106,57 @@ class RegisterRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $data = [
-            'email' => strtolower(trim($this->email)),
-            'name' => trim($this->name),
-        ];
+        $userId = $this->route('id'); // Get user ID for updates
+        $isUpdate = !empty($userId); // Check if this is an update operation
+        $data = [];
+
+        // Handle required fields for create, optional for update
+        if ($this->has('email')) {
+            $data['email'] = strtolower(trim($this->email));
+        }
+
+        if ($this->has('name')) {
+            $data['name'] = trim($this->name);
+        }
 
         // Handle optional fields
-        if ($this->has('user_name') && !empty($this->user_name)) {
-            $data['user_name'] = strtolower(trim($this->user_name));
+        if ($this->has('user_name')) {
+            $data['user_name'] = !empty($this->user_name) ? strtolower(trim($this->user_name)) : null;
         }
 
         if ($this->has('type') && !empty($this->type)) {
             $data['type'] = strtolower(trim($this->type));
-        } else {
-            $data['type'] = 'participant'; // Default type
+        } elseif (!$isUpdate) {
+            // Only set default type for create operations
+            $data['type'] = UserTypeEnum::PARTICIPANT->value;
         }
 
         if ($this->has('theme') && !empty($this->theme)) {
             $data['theme'] = strtolower(trim($this->theme));
-        } else {
-            $data['theme'] = 'light'; // Default theme
+        } elseif (!$isUpdate) {
+            // Only set default theme for create operations
+            $data['theme'] = 'light';
         }
 
-        if ($this->has('web_engine') && !empty($this->web_engine)) {
-            $data['web_engine'] = trim($this->web_engine);
+        if ($this->has('web_engine')) {
+            $data['web_engine'] = !empty($this->web_engine) ? trim($this->web_engine) : null;
         }
 
-        if ($this->has('image') && !empty($this->image)) {
-            $data['image'] = trim($this->image);
+        if ($this->has('image')) {
+            $data['image'] = !empty($this->image) ? trim($this->image) : null;
         }
 
-        $this->merge($data);
+        if ($this->has('is_active')) {
+            $data['is_active'] = (bool) $this->is_active;
+        }
+
+        if ($this->has('is_deleted')) {
+            $data['is_deleted'] = (bool) $this->is_deleted;
+        }
+
+        if (!empty($data)) {
+            $this->merge($data);
+        }
     }
 
     /**

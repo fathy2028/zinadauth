@@ -16,8 +16,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->text('title');
             $table->text('description');
-            $table->timestamp('start_at');
-            $table->timestamp('end_at');
+            $table->timestamp('start_at')->nullable();
+            $table->timestamp('end_at')->nullable();
             $table->uuid('created_by');
             $table->uuid('setting_id');
             $table->boolean('is_deleted')->default(false);
