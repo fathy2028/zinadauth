@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('attempts', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('text_answer')->nullable();
-            $table->smallInteger('choice_answer')->nullable();
-            $table->char('question_id', 36)->nullable()->index('question_id');
-            $table->char('user_id', 36)->nullable()->index('user_id');
-            $table->char('assignment_workshop_id', 36)->nullable()->index('assignment_workshop_id');
-            $table->json('result')->nullable();
-            $table->integer('step')->nullable();
+            $table->text('text_answer');
+            $table->smallInteger('choice_answer');
+            $table->char('question_id', 36);
+            $table->char('user_id', 36);
+            $table->char('assignment_workshop_id', 36);
+            $table->json('result');
+            $table->integer('step');
             $table->timestamps();
         });
     }

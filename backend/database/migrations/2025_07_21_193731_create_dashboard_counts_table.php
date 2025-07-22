@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('dashboard_counts', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('admin_count')->nullable();
-            $table->bigInteger('participant_count')->nullable();
-            $table->bigInteger('facilitator_count')->nullable();
-            $table->bigInteger('assignment_count')->nullable();
-            $table->bigInteger('workshop_count')->nullable();
-            $table->bigInteger('question_count')->nullable();
+            $table->bigInteger('admin_count');
+            $table->bigInteger('participant_count');
+            $table->bigInteger('facilitator_count');
+            $table->bigInteger('assignment_count');
+            $table->bigInteger('workshop_count');
+            $table->bigInteger('question_count');
         });
     }
 

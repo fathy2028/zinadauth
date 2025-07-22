@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('templates', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->text('title');
-            $table->text('title_ar')->nullable();
-            $table->text('description')->nullable();
-            $table->text('description_ar')->nullable();
-            $table->uuid('setting_id')->nullable()->index('setting_id');
+            $table->text('title_ar');
+            $table->text('description');
+            $table->text('description_ar');
+            $table->uuid('setting_id');
             $table->timestamps();
         });
     }

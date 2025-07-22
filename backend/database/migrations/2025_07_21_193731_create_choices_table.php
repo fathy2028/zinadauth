@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('choices', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->json('choices')->nullable();
-            $table->json('choices_ar')->nullable();
-            $table->enum('type', \App\Enums\ChoiceTypeEnum::values())->nullable();
-            $table->integer('duration')->nullable()->default(3);
+            $table->json('choices');
+            $table->json('choices_ar');
+            $table->enum('type', \App\Enums\ChoiceTypeEnum::values());
+            $table->integer('duration')->default(3);
             $table->timestamps();
         });
     }
