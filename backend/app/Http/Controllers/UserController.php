@@ -73,25 +73,17 @@ class UserController extends BaseCrudController
             // Load user with roles for response
             $user->load(['roles', 'permissions']);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'User created successfully',
-                'data' => [
-                    'user' => new UserResource($user),
-                    'capabilities' => $user->getCapabilities(),
-                ]
-            ], 201);
+            return ApiResponse::success([
+                'user' => new UserResource($user),
+                'capabilities' => $user->getCapabilities(),
+            ], 'User created successfully', 201);
 
         } catch (Exception $e) {
             \Illuminate\Support\Facades\Log::error('Failed to create user: ' . $e->getMessage(), [
                 'request_data' => $request->all()
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create user',
-                'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-            ], 500);
+            return ApiResponse::error('Failed to create user', 500, ['exception' => $e->getMessage()]);
         }
     }
 
