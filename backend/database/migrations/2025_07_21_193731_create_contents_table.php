@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('contents', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('title')->nullable();
-            $table->text('brief')->nullable();
-            $table->text('ppt')->nullable();
+            $table->text('title');
+            $table->text('brief');
+            $table->text('ppt');
             $table->char('created_by', 36)->index('created_by');
             $table->timestamps();
         });

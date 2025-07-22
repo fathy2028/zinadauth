@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('client')->nullable();
-            $table->text('logo')->nullable();
-            $table->text('primary_color')->nullable();
-            $table->text('secondary_color')->nullable();
-            $table->text('dark_primary_color')->nullable();
-            $table->text('dark_secondary_color')->nullable();
-            $table->text('lang')->nullable();
-            $table->text('domain_name')->nullable();
+            $table->text('client');
+            $table->text('logo');
+            $table->text('primary_color');
+            $table->text('secondary_color');
+            $table->text('dark_primary_color');
+            $table->text('dark_secondary_color');
+            $table->text('lang');
+            $table->text('domain_name');
             $table->double('duration')->default(0.5);
             $table->timestamps();
         });

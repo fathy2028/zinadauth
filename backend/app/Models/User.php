@@ -10,25 +10,11 @@ use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 use App\Traits\HasRolePermissions;
-use Illuminate\Support\Str;
+use App\Traits\HasUuid;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasRolePermissions;
-
-    /**
-     * Indicates if the model's ID is auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * The data type of the auto-incrementing ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'string';
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasRolePermissions, HasUuid;
 
     /**
      * The attributes that are mass assignable.
@@ -94,17 +80,8 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    /**
-     * Boot the model.
-     */
-    protected static function boot()
+    public function assignments()
     {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->id)) {
-                $model->id = Str::uuid();
-            }
-        });
+        return $this->hasMany(Assignment::class, 'created_by', 'id');
     }
 }

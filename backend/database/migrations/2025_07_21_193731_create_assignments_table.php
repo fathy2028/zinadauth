@@ -14,10 +14,10 @@ return new class extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('title')->nullable();
-            $table->text('description')->nullable();
-            $table->enum('question_order', AssignmentQuestionOrderEnum::values())->nullable()->default(AssignmentQuestionOrderEnum::ORDERED->value);
-            $table->char('created_by', 36)->nullable()->index('created_by');
+            $table->text('title');
+            $table->text('description');
+            $table->enum('question_order', AssignmentQuestionOrderEnum::values())->default(AssignmentQuestionOrderEnum::ORDERED->value);
+            $table->char('created_by', 36);
             $table->timestamps();
         });
     }
