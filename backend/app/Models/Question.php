@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\QuestionTypeEnum;
-use App\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,8 +11,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Question extends Model
 {
-    use HasFactory, HasUuid;
+    use HasFactory, HasUuids;
 
+    public $incrementing = false;
+    protected $keyType = 'string';
     /**
      * The attributes that are mass assignable.
      *
