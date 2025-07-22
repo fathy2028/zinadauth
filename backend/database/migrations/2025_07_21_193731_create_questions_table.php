@@ -18,7 +18,7 @@ return new class extends Migration
             $table->json('choices');
             $table->json('choices_ar');
             $table->enum('type', \App\Enums\QuestionTypeEnum::values());
-            $table->char('created_by', 36);
+            $table->uuid('created_by');
             $table->bigInteger('points')->default(0);
             $table->integer('duration')->default(3);
             $table->smallInteger('answer');

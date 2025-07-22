@@ -3,14 +3,16 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 use App\Traits\HasRolePermissions;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -83,5 +85,13 @@ class User extends Authenticatable implements JWTSubject
     public function assignments()
     {
         return $this->hasMany(Assignment::class, 'created_by', 'id');
+    }
+
+    public function workshops(): BelongsToMany
+    {
+        return $this->belongsToMany(Workshop::class, 'user_workshops')
+            ->using(new class extends Pivot {
+                use HasUuids;
+            })->withPivot(['status']);
     }
 }

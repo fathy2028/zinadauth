@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('assignment_questions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->char('assignment_id', 36);
-            $table->char('question_id', 36);
+            $table->uuid('assignment_id');
+            $table->uuid('question_id');
             $table->integer('question_order')->default(0);
             $table->timestamps();
         });

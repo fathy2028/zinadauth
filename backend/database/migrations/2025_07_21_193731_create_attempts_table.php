@@ -15,9 +15,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->text('text_answer');
             $table->smallInteger('choice_answer');
-            $table->char('question_id', 36);
-            $table->char('user_id', 36);
-            $table->char('assignment_workshop_id', 36);
+            $table->uuid('question_id');
+            $table->uuid('user_id');
+            $table->uuid('assignment_workshop_id');
             $table->json('result');
             $table->integer('step');
             $table->timestamps();
