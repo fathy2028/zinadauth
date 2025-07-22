@@ -4,18 +4,15 @@ namespace App\Models;
 
 use App\Enums\WorkshopStatusTypeEnum;
 use App\Support\Traits\HasCreatedBy;
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use Illuminate\Database\Eloquent\Builder;
+use App\Support\Traits\UseCommonScopes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class Workshop extends Model
 {
-    use HasUuids, HasCreatedBy;
+    use HasUuids, HasCreatedBy, UseCommonScopes;
 
     protected $fillable = [
         'title',
@@ -44,17 +41,5 @@ class Workshop extends Model
             ->using(new class extends Pivot {
                 use HasUuids;
             })->withPivot(['status']);
-    }
-
-    #[Scope]
-    protected function status(Builder $query, \StringBackedEnum $status): void
-    {
-        $query->where('status', $status);
-    }
-
-    #[Scope]
-    protected function isDeleted(Builder $query): void
-    {
-        $query->where('is_deleted', true);
     }
 }
