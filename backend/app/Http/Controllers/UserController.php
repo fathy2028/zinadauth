@@ -11,7 +11,6 @@ use App\Http\Responses\ApiResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
 use Exception;
 
 class UserController extends BaseCrudController
@@ -32,272 +31,98 @@ class UserController extends BaseCrudController
         return new User();
     }
 
-    /**
-     * Get validation rules for BaseCrudController
-     */
-    protected function getValidationRules(Request $request, $id = null): array
-    {
-        // For user creation/update, we'll use the same rules as RegisterRequest
-        // but we need to handle the unique email rule for updates
-        $rules = [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                'min:2',
-                'regex:/^[a-zA-Z\s]+$/',
-            ],
-            'email' => [
-                'required',
-                'string',
-                'email:rfc',
-                'max:255',
-                $id ? "unique:users,email,{$id}" : 'unique:users,email',
-            ],
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'max:255',
-            ],
-            'user_name' => [
-                'nullable',
-                'string',
-                'max:255',
-                $id ? "unique:users,user_name,{$id}" : 'unique:users,user_name',
-                'regex:/^[a-zA-Z0-9_]+$/',
-            ],
-            'type' => [
-                'nullable',
-                'string',
-                'in:admin,participant,facilitator',
-            ],
-            'theme' => [
-                'nullable',
-                'string',
-                'in:light,dark',
-            ],
-            'image' => [
-                'nullable',
-                'string',
-                'max:65535',
-            ],
-            'web_engine' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-        ];
-
-        return $rules;
-    }
-
-    /**
-     * Override the store method to handle password hashing and role assignment
-     */
-    public function store(Request $request): JsonResponse
+    
+    public function register(RegisterRequest $request)
     {
         try {
-            // Get validation rules from the parent class
-            $rules = $this->getValidationRules($request);
+            $validatedData = $request->validated();
 
-            // Validate the incoming data
-            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $validatedData = $validator->validated();
-
-            // Hash the password before creating the user
-            if (isset($validatedData['password'])) {
-                $validatedData['password'] = Hash::make($validatedData['password']);
-            }
-
-            // Set default values if not provided
-            $validatedData['type'] = $validatedData['type'] ?? 'participant';
-            $validatedData['theme'] = $validatedData['theme'] ?? 'light';
-            $validatedData['is_active'] = true;
-            $validatedData['is_deleted'] = false;
-
-            // Create the user
-            $user = User::create($validatedData);
-
-            // Assign default role based on user type
-            $this->assignDefaultRole($user);
+            // Create user using repository (handles password hashing and role assignment)
+            $user = $this->userRepository->create($validatedData);
 
             // Load user with roles for response
             $user->load(['roles', 'permissions']);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'User created successfully',
-                'data' => [
+            return ApiResponse::success(
+                [
                     'user' => new UserResource($user),
                     'capabilities' => $user->getCapabilities(),
-                ]
-            ], 201);
-
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to create user: ' . $e->getMessage(), [
-                'request_data' => $request->all()
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create user',
-                'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-            ], 500);
-        }
-    }
-
-    /**
-     * Register method that uses the store method
-     */
-    public function register(RegisterRequest $request)
-    {
-        try {
-            // Use the store method which handles validation, password hashing, and role assignment
-            return $this->store($request);
+                ],
+                'User registered successfully',
+                201
+            );
         } catch (Exception $e) {
             return ApiResponse::error('Registration failed', 500, ['exception' => $e->getMessage()]);
         }
     }
 
     /**
-     * Override the update method to handle password hashing
+     * Override store method to use RegisterRequest and UserRepository
      */
-    public function update(Request $request, $id): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         try {
-            // Find the user to update
-            $user = User::findOrFail($id);
+            // Convert Request to RegisterRequest for validation
+            $registerRequest = RegisterRequest::createFrom($request);
+            $registerRequest->setRouteResolver($request->getRouteResolver());
+            $validatedData = $registerRequest->validated();
 
-            // Get validation rules (may be different for updates)
-            $rules = $this->getValidationRules($request, $id);
-
-            // Make password optional for updates
-            if (isset($rules['password'])) {
-                $rules['password'] = array_merge(['nullable'], $rules['password']);
-            }
-
-            // Validate the incoming data
-            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $validatedData = $validator->validated();
-
-            // Hash the password if it's being updated
-            if (isset($validatedData['password']) && !empty($validatedData['password'])) {
-                $validatedData['password'] = Hash::make($validatedData['password']);
-            } else {
-                // Remove password from update data if it's empty
-                unset($validatedData['password']);
-            }
-
-            // Update the user
-            $user->update($validatedData);
-
-            // If user type changed, update role
-            if (isset($validatedData['type']) && $validatedData['type'] !== $user->getOriginal('type')) {
-                $this->updateUserRole($user, $validatedData['type']);
-            }
+            // Create user using repository (handles password hashing and role assignment)
+            $user = $this->userRepository->create($validatedData);
 
             // Load user with roles for response
             $user->load(['roles', 'permissions']);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'User updated successfully',
-                'data' => [
-                    'user' => new UserResource($user->fresh()),
-                    'capabilities' => $user->getCapabilities(),
-                ]
-            ], 200);
+            return ApiResponse::success([
+                'user' => new UserResource($user),
+                'capabilities' => $user->getCapabilities(),
+            ], 'User created successfully', 201);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found'
-            ], 404);
-
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to update user: ' . $e->getMessage(), [
-                'id' => $id,
+        } catch (Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to create user: ' . $e->getMessage(), [
                 'request_data' => $request->all()
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update user',
-                'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-            ], 500);
+            return ApiResponse::error('Failed to create user', 500, ['exception' => $e->getMessage()]);
         }
     }
+
+
 
     /**
-     * Assign default role based on user type
+     * Override update method to use RegisterRequest and UserRepository
      */
-    private function assignDefaultRole(User $user): void
+    public function update(Request $request, $id): JsonResponse
     {
-        $roleMapping = [
-            'admin' => 'admin',
-            'facilitator' => 'facilitator',
-            'participant' => 'participant',
-        ];
-
-        $roleName = $roleMapping[$user->type] ?? 'participant';
-
         try {
-            $user->assignRole($roleName);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('Failed to assign default role to user', [
-                'user_id' => $user->id,
-                'user_type' => $user->type,
-                'intended_role' => $roleName,
-                'error' => $e->getMessage()
-            ]);
+            // Convert Request to RegisterRequest for validation
+            $registerRequest = RegisterRequest::createFrom($request);
+            $registerRequest->setRouteResolver($request->getRouteResolver());
+            $validatedData = $registerRequest->validated();
+
+            // Use UserRepository to update the user
+            $user = $this->userRepository->update($id, $validatedData);
+
+            // Load user with roles for response
+            $user->load(['roles', 'permissions']);
+
+            return ApiResponse::success(
+                [
+                    'user' => new UserResource($user),
+                    'capabilities' => $user->getCapabilities(),
+                ],
+                'User updated successfully',
+                200
+            );
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return ApiResponse::error('User not found', 404);
+        } catch (Exception $e) {
+            return ApiResponse::error('Failed to update user', 500, ['exception' => $e->getMessage()]);
         }
     }
 
-    /**
-     * Update user role when type changes
-     */
-    private function updateUserRole(User $user, string $newType): void
-    {
-        $roleMapping = [
-            'admin' => 'admin',
-            'facilitator' => 'facilitator',
-            'participant' => 'participant',
-        ];
 
-        $newRoleName = $roleMapping[$newType] ?? 'participant';
-
-        try {
-            // Remove all current roles and assign the new one
-            $user->syncRoles([$newRoleName]);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('Failed to update user role', [
-                'user_id' => $user->id,
-                'old_type' => $user->getOriginal('type'),
-                'new_type' => $newType,
-                'intended_role' => $newRoleName,
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
 
 
     public function login(LoginRequest $request)
@@ -308,9 +133,14 @@ class UserController extends BaseCrudController
             $response = $this->userRepository->login($validatedData);
 
             if ($response['success']) {
+                // Load user with roles and capabilities
+                $user = $response['user'];
+                $user->load(['roles', 'permissions']);
+
                 return ApiResponse::success([
                     'token' => $response['token'],
-                    'user' => new UserResource($response['user']),
+                    'user' => new UserResource($user),
+                    'capabilities' => $user->getCapabilities(),
                 ], 'Login successful', $response['status']);
             } else {
                 return ApiResponse::error($response['message'], $response['status']);

@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\QuestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,22 +28,30 @@ Route::middleware('auth:api')->group(function () {
         return $request->user();
     });
 
-    // Role and Permission Management Routes
-    Route::prefix('roles-permissions')->group(function () {
-        // Get current user capabilities (available to all authenticated users)
-        Route::get('/my-capabilities', [RolePermissionController::class, 'getMyCapabilities']);
-
-        // Admin only routes
-        Route::middleware('permission:manage-user-roles')->group(function () {
-            Route::get('/roles', [RolePermissionController::class, 'getRoles']);
-            Route::get('/permissions', [RolePermissionController::class, 'getPermissions']);
-            Route::post('/assign-role', [RolePermissionController::class, 'assignRole']);
-            Route::post('/remove-role', [RolePermissionController::class, 'removeRole']);
-            Route::post('/give-permission', [RolePermissionController::class, 'givePermission']);
-            Route::post('/revoke-permission', [RolePermissionController::class, 'revokePermission']);
-            Route::get('/user/{userId}/roles-permissions', [RolePermissionController::class, 'getUserRolesPermissions']);
-            Route::post('/check-permission', [RolePermissionController::class, 'checkPermission']);
-            Route::post('/check-role', [RolePermissionController::class, 'checkRole']);
-        });
+    // Question routes with permission middleware
+    Route::middleware('permission:view-questions')->group(function () {
+        Route::get('/questions', [QuestionController::class, 'index']);
+        Route::get('/questions/{id}', [QuestionController::class, 'show']);
+        Route::get('/questions/type/{type}', [QuestionController::class, 'getByType']);
+        Route::get('/questions/random/{type}', [QuestionController::class, 'getRandomByType']);
+        Route::get('/questions-statistics', [QuestionController::class, 'statistics']);
+        Route::get('/questions-search', [QuestionController::class, 'search']);
     });
+
+    Route::middleware('permission:create-questions')->group(function () {
+        Route::post('/questions', [QuestionController::class, 'store']);
+        Route::post('/questions/{id}/duplicate', [QuestionController::class, 'duplicate']);
+        Route::post('/questions/bulk-create', [QuestionController::class, 'bulkCreate']);
+    });
+
+    Route::middleware('permission:edit-questions')->group(function () {
+        Route::put('/questions/{id}', [QuestionController::class, 'update']);
+        Route::patch('/questions/{id}', [QuestionController::class, 'update']);
+    });
+
+    Route::middleware('permission:delete-questions')->group(function () {
+        Route::delete('/questions/{id}', [QuestionController::class, 'destroy']);
+        Route::post('/questions/bulk-delete', [QuestionController::class, 'bulkDelete']);
+    });
+
 });

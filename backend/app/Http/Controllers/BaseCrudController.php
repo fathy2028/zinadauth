@@ -44,7 +44,7 @@ abstract class BaseCrudController extends Controller
      * Get validation rules for create/update operations
      * Child controllers must implement this method
      */
-    abstract protected function getValidationRules(Request $request, $id = null): array;
+   
 
     /**
      * Get the model instance
