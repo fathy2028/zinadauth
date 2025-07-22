@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\WorkshopStatusTypeEnum;
+use App\Support\Traits\HasCreatedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class Workshop extends Model
 {
-    use HasUuids;
+    use HasUuids, HasCreatedBy;
 
     protected $fillable = [
         'title',
@@ -36,11 +37,6 @@ class Workshop extends Model
         'qr_status' => 'boolean',
         'status' => WorkshopStatusTypeEnum::class,
     ];
-
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
 
     public function users(): BelongsToMany
     {
