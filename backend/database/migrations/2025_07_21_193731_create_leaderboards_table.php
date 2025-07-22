@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('leaderboard', function (Blueprint $table) {
+        Schema::create('leaderboards', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->char('user_id', 36)->nullable();
-            $table->char('assignment_id', 36)->nullable();
-            $table->char('workshop_id', 36)->nullable();
+            $table->uuid('user_id')->nullable();
+            $table->uuid('assignment_id')->nullable();
+            $table->uuid('workshop_id')->nullable();
             $table->string('status')->nullable();
             $table->string('assignment_type')->nullable();
             $table->boolean('qr_status')->default(false);
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('leaderboard');
+        Schema::dropIfExists('leaderboards');
     }
 };
