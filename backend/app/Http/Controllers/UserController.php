@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Exception;
 
@@ -23,12 +23,30 @@ class UserController extends BaseCrudController
         parent::__construct(); // Initialize BaseCrudController
     }
 
+
+
     /**
      * Get the model instance for BaseCrudController
      */
     protected function getModel(): User
     {
         return new User();
+    }
+
+    /**
+     * Get the form request class for store operations
+     */
+    protected function getStoreFormRequestClass(): string
+    {
+        return RegisterRequest::class;
+    }
+
+    /**
+     * Get the form request class for update operations
+     */
+    protected function getUpdateFormRequestClass(): string
+    {
+        return UserUpdateRequest::class;
     }
 
     
@@ -59,13 +77,13 @@ class UserController extends BaseCrudController
     /**
      * Override store method to use RegisterRequest and UserRepository
      */
-    public function store(Request $request): JsonResponse
+    public function store(): JsonResponse
     {
         try {
-            // Convert Request to RegisterRequest for validation
-            $registerRequest = RegisterRequest::createFrom($request);
-            $registerRequest->setRouteResolver($request->getRouteResolver());
-            $validatedData = $registerRequest->validated();
+            // Get the form request instance (RegisterRequest)
+            $request = $this->resolveFormRequest('store');
+
+            $validatedData = $request->validated();
 
             // Create user using repository (handles password hashing and role assignment)
             $user = $this->userRepository->create($validatedData);
@@ -92,13 +110,13 @@ class UserController extends BaseCrudController
     /**
      * Override update method to use RegisterRequest and UserRepository
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update($id): JsonResponse
     {
         try {
-            // Convert Request to RegisterRequest for validation
-            $registerRequest = RegisterRequest::createFrom($request);
-            $registerRequest->setRouteResolver($request->getRouteResolver());
-            $validatedData = $registerRequest->validated();
+            // Get the form request instance (UserUpdateRequest)
+            $request = $this->resolveFormRequest('update');
+
+            $validatedData = $request->validated();
 
             // Use UserRepository to update the user
             $user = $this->userRepository->update($id, $validatedData);

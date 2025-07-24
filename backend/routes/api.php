@@ -28,30 +28,39 @@ Route::middleware('auth:api')->group(function () {
         return $request->user();
     });
 
-    // Question routes with permission middleware
-    Route::middleware('permission:view-questions')->group(function () {
-        Route::get('/questions', [QuestionController::class, 'index']);
-        Route::get('/questions/{id}', [QuestionController::class, 'show']);
-        Route::get('/questions/type/{type}', [QuestionController::class, 'getByType']);
-        Route::get('/questions/random/{type}', [QuestionController::class, 'getRandomByType']);
+    // Question routes with role-based middleware
+
+    // Routes accessible by all authenticated users (admin, facilitator, participant)
+    // These are basic read operations that all users need for taking quizzes/workshops
+    Route::get('/questions', [QuestionController::class, 'index']);
+    Route::get('/questions/{id}', [QuestionController::class, 'show']);
+    Route::get('/questions/type/{type}', [QuestionController::class, 'getByType']);
+    Route::get('/questions/random/{type}', [QuestionController::class, 'getRandomByType']);
+
+    // Routes accessible by admin and facilitator only
+    // These are content management operations for workshop creators
+    Route::middleware('role:admin|facilitator')->group(function () {
         Route::get('/questions-statistics', [QuestionController::class, 'statistics']);
         Route::get('/questions-search', [QuestionController::class, 'search']);
-    });
-
-    Route::middleware('permission:create-questions')->group(function () {
         Route::post('/questions', [QuestionController::class, 'store']);
         Route::post('/questions/{id}/duplicate', [QuestionController::class, 'duplicate']);
-        Route::post('/questions/bulk-create', [QuestionController::class, 'bulkCreate']);
-    });
-
-    Route::middleware('permission:edit-questions')->group(function () {
         Route::put('/questions/{id}', [QuestionController::class, 'update']);
         Route::patch('/questions/{id}', [QuestionController::class, 'update']);
     });
 
-    Route::middleware('permission:delete-questions')->group(function () {
+    // Routes accessible by admin only
+    // These are system administration operations with high impact
+    Route::middleware('role:admin')->group(function () {
+        // Question bulk operations
+        Route::post('/questions/bulk-create', [QuestionController::class, 'bulkCreate']);
         Route::delete('/questions/{id}', [QuestionController::class, 'destroy']);
         Route::post('/questions/bulk-delete', [QuestionController::class, 'bulkDelete']);
+
+        // User management routes (admin only)
+        Route::apiResource('users', UserController::class)->except(['store']); // store is handled by register
+        Route::patch('/users/{id}/activate', [UserController::class, 'activate']);
+        Route::patch('/users/{id}/deactivate', [UserController::class, 'deactivate']);
+        Route::post('/users/bulk-delete', [UserController::class, 'bulkDelete']);
     });
 
 });
