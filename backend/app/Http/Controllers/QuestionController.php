@@ -92,6 +92,9 @@ class QuestionController extends BaseCrudController
     public function index(): JsonResponse
     {
         try {
+            // Check authorization
+            $this->authorize('viewAny', Question::class);
+
             // Get the form request instance (QuestionSearchRequest)
             $request = $this->resolveFormRequest('index');
 
@@ -137,6 +140,9 @@ class QuestionController extends BaseCrudController
     public function store(): JsonResponse
     {
         try {
+            // Check authorization
+            $this->authorize('create', Question::class);
+
             // Simplified approach: Use direct validation with QuestionRequest rules
             $currentRequest = request();
 
@@ -192,6 +198,11 @@ class QuestionController extends BaseCrudController
         try {
             $question = $this->questionRepository->find($id);
 
+            if ($question) {
+                // Check authorization
+                $this->authorize('view', $question);
+            }
+
             if (!$question) {
                 return ApiResponse::error('Question not found', 404);
             }
@@ -218,6 +229,16 @@ class QuestionController extends BaseCrudController
     public function update($id): JsonResponse
     {
         try {
+            // Find the question first for authorization
+            $question = $this->questionRepository->find($id);
+
+            if (!$question) {
+                return ApiResponse::error('Question not found', 404);
+            }
+
+            // Check authorization
+            $this->authorize('update', $question);
+
             // Get the form request instance (QuestionRequest)
             $request = $this->resolveFormRequest('update');
 
@@ -255,6 +276,9 @@ class QuestionController extends BaseCrudController
                 return ApiResponse::error('Question not found', 404);
             }
 
+            // Check authorization
+            $this->authorize('delete', $question);
+
             // Check if question is used in any assignments
             if ($question->assignments()->exists()) {
                 return ApiResponse::error(
@@ -279,6 +303,9 @@ class QuestionController extends BaseCrudController
     public function getByType(string $type): JsonResponse
     {
         try {
+            // Check authorization
+            $this->authorize('viewAny', Question::class);
+
             $questionType = QuestionTypeEnum::tryFrom($type);
             
             if (!$questionType) {
@@ -303,6 +330,9 @@ class QuestionController extends BaseCrudController
     public function getRandomByType(string $type): JsonResponse
     {
         try {
+            // Check authorization
+            $this->authorize('viewAny', Question::class);
+
             $questionType = QuestionTypeEnum::tryFrom($type);
             
             if (!$questionType) {
@@ -328,6 +358,16 @@ class QuestionController extends BaseCrudController
     public function duplicate($id): JsonResponse
     {
         try {
+            // Find the original question for authorization
+            $originalQuestion = $this->questionRepository->find($id);
+
+            if (!$originalQuestion) {
+                return ApiResponse::error('Question not found', 404);
+            }
+
+            // Check authorization
+            $this->authorize('duplicate', $originalQuestion);
+
             $duplicatedQuestion = $this->questionRepository->duplicate($id);
             $duplicatedQuestion->load('creator');
 
@@ -351,6 +391,9 @@ class QuestionController extends BaseCrudController
     public function statistics(): JsonResponse
     {
         try {
+            // Check authorization
+            $this->authorize('search', Question::class);
+
             $stats = $this->questionRepository->getStatistics();
 
             return ApiResponse::success($stats, 'Questions statistics retrieved successfully');
@@ -366,6 +409,9 @@ class QuestionController extends BaseCrudController
     public function search(): JsonResponse
     {
         try {
+            // Check authorization
+            $this->authorize('search', Question::class);
+
             // Get the form request instance (QuestionSearchRequest)
             $request = $this->resolveFormRequest('search');
 
@@ -394,6 +440,9 @@ class QuestionController extends BaseCrudController
     public function bulkCreate(): JsonResponse
     {
         try {
+            // Check authorization
+            $this->authorize('bulkCreate', Question::class);
+
             // Use the same approach as store method
             $currentRequest = request();
 
@@ -424,6 +473,9 @@ class QuestionController extends BaseCrudController
     public function bulkDelete(): JsonResponse
     {
         try {
+            // Check authorization
+            $this->authorize('bulkDelete', Question::class);
+
             // Use the same approach as store method
             $currentRequest = request();
 
@@ -482,7 +534,7 @@ class QuestionController extends BaseCrudController
     }
 
     /**
-     * Check if the current user can view answers
+     * Check if the current user can view answers using policy
      */
     private function canViewAnswers($question = null): bool
     {
@@ -490,18 +542,15 @@ class QuestionController extends BaseCrudController
             return false;
         }
 
-        $user = auth()->user();
-
-        // Admin can always view answers
-        if (method_exists($user, 'hasRole') && $user->hasRole('admin')) {
+        try {
+            if ($question) {
+                $this->authorize('viewAnswers', $question);
+            } else {
+                $this->authorize('viewAnswers', Question::class);
+            }
             return true;
+        } catch (\Exception) {
+            return false;
         }
-
-        // Facilitators can view answers for their own questions
-        if (method_exists($user, 'hasRole') && $user->hasRole('facilitator')) {
-            return $question ? $question->created_by === $user->id : true;
-        }
-
-        return false;
     }
 }
