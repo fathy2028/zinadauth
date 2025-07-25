@@ -10,6 +10,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Support\Traits\HandlesFormRequests;
 
 /**
  * Base CRUD Controller
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\DB;
  */
 abstract class BaseCrudController extends Controller
 {
+    use HandlesFormRequests;
     /**
      * The Eloquent model instance
      */
@@ -44,13 +46,61 @@ abstract class BaseCrudController extends Controller
      * Get validation rules for create/update operations
      * Child controllers must implement this method
      */
-   
+
 
     /**
      * Get the model instance
      * Child controllers must implement this method
      */
     abstract protected function getModel(): Model;
+
+    /**
+     * Get the form request class for index operations
+     */
+    protected function getIndexFormRequestClass(): string
+    {
+        return '';
+    }
+
+    /**
+     * Get the form request class for store operations
+     */
+    protected function getStoreFormRequestClass(): string
+    {
+        return '';
+    }
+
+    /**
+     * Get the form request class for update operations
+     */
+    protected function getUpdateFormRequestClass(): string
+    {
+        return '';
+    }
+
+    /**
+     * Get the form request class for search operations
+     */
+    protected function getSearchFormRequestClass(): string
+    {
+        return '';
+    }
+
+    /**
+     * Get the form request class for bulk create operations
+     */
+    protected function getBulkCreateFormRequestClass(): string
+    {
+        return '';
+    }
+
+    /**
+     * Get the form request class for bulk delete operations
+     */
+    protected function getBulkDeleteFormRequestClass(): string
+    {
+        return '';
+    }
 
     /**
      * Initialize the controller
@@ -68,14 +118,32 @@ abstract class BaseCrudController extends Controller
      * - Sorting by any field
      * - Pagination with customizable limits
      */
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
         try {
+            // Use direct validation approach
+            $currentRequest = request();
+
+            // Get the form request class for index operation
+            $formRequestClass = $this->getIndexFormRequestClass();
+
+            if (!empty($formRequestClass) && class_exists($formRequestClass)) {
+                // Get validation rules from the form request
+                $formRequest = new $formRequestClass();
+                $rules = $formRequest->rules();
+
+                // Validate the request data
+                $validatedData = $currentRequest->validate($rules);
+            } else {
+                // No validation needed for index, just use the request
+                $validatedData = $currentRequest->all();
+            }
+
             // Start building the query
             $query = $this->model->newQuery();
 
             // Handle search functionality
-            $searchTerm = $request->get('search');
+            $searchTerm = $currentRequest->get('search');
             if (!empty($searchTerm)) {
                 $query->where(function ($q) use ($searchTerm) {
                     // Search across all searchable fields
@@ -86,8 +154,8 @@ abstract class BaseCrudController extends Controller
             }
 
             // Handle sorting
-            $sortBy = $request->get('sort_by', 'id');
-            $sortOrder = $request->get('sort_order', 'desc');
+            $sortBy = $currentRequest->get('sort_by', 'id');
+            $sortOrder = $currentRequest->get('sort_order', 'desc');
 
             // Validate sort order
             if (in_array($sortOrder, ['asc', 'desc'])) {
@@ -95,7 +163,7 @@ abstract class BaseCrudController extends Controller
             }
 
             // Handle pagination
-            $limit = $request->get('limit', $this->defaultLimit);
+            $limit = $currentRequest->get('limit', $this->defaultLimit);
             $limit = min($limit, $this->maxLimit); // Don't exceed max limit
 
             $results = $query->paginate($limit);
@@ -136,25 +204,29 @@ abstract class BaseCrudController extends Controller
      * This method validates the incoming data and creates a new record
      * in the database with proper error handling and logging.
      */
-    public function store(Request $request): JsonResponse
+    public function store(): JsonResponse
     {
         try {
-            // Get validation rules from the child controller
-            $rules = $this->getValidationRules($request);
+            // Use direct validation approach
+            $currentRequest = request();
 
-            // Validate the incoming data
-            $validator = Validator::make($request->all(), $rules);
+            // Get the form request class for store operation
+            $formRequestClass = $this->getStoreFormRequestClass();
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()
-                ], 422);
+            if (!empty($formRequestClass) && class_exists($formRequestClass)) {
+                // Get validation rules from the form request
+                $formRequest = new $formRequestClass();
+                $rules = $formRequest->rules();
+
+                // Validate the request data
+                $validatedData = $currentRequest->validate($rules);
+            } else {
+                // Fallback to all request data if no form request is defined
+                $validatedData = $currentRequest->all();
             }
 
             // Create the new record with validated data
-            $record = $this->model->create($validator->validated());
+            $record = $this->model->create($validatedData);
 
             // Log the successful creation
             Log::info('New record created', [
@@ -173,7 +245,7 @@ abstract class BaseCrudController extends Controller
             // Log the error with context
             Log::error('Failed to create record: ' . $e->getMessage(), [
                 'model' => get_class($this->model),
-                'request_data' => $request->all()
+                'request_data' => request()->all()
             ]);
 
             return response()->json([
@@ -229,28 +301,32 @@ abstract class BaseCrudController extends Controller
      * This method finds a record by ID, validates the new data,
      * and updates the record with the validated information.
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update($id): JsonResponse
     {
         try {
+            // Use direct validation approach
+            $currentRequest = request();
+
+            // Get the form request class for update operation
+            $formRequestClass = $this->getUpdateFormRequestClass();
+
+            if (!empty($formRequestClass) && class_exists($formRequestClass)) {
+                // Get validation rules from the form request
+                $formRequest = new $formRequestClass();
+                $rules = $formRequest->rules();
+
+                // Validate the request data
+                $validatedData = $currentRequest->validate($rules);
+            } else {
+                // Fallback to all request data if no form request is defined
+                $validatedData = $currentRequest->all();
+            }
+
             // Find the record to update
             $record = $this->model->findOrFail($id);
 
-            // Get validation rules (may be different for updates)
-            $rules = $this->getValidationRules($request, $id);
-
-            // Validate the incoming data
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
             // Update the record with validated data
-            $record->update($validator->validated());
+            $record->update($validatedData);
 
             // Log the successful update
             Log::info('Record updated', [
@@ -277,7 +353,7 @@ abstract class BaseCrudController extends Controller
             Log::error('Failed to update record: ' . $e->getMessage(), [
                 'model' => get_class($this->model),
                 'id' => $id,
-                'request_data' => $request->all()
+                'request_data' => request()->all()
             ]);
 
             return response()->json([
@@ -346,10 +422,12 @@ abstract class BaseCrudController extends Controller
      * This method allows deleting multiple records by providing an array of IDs.
      * Useful for bulk operations in admin interfaces.
      */
-    public function bulkDelete(Request $request): JsonResponse
+    public function bulkDelete(): JsonResponse
     {
         try {
-            $validator = Validator::make($request->all(), [
+            $currentRequest = request();
+
+            $validator = Validator::make($currentRequest->all(), [
                 'ids' => 'required|array|min:1',
                 'ids.*' => 'integer|exists:' . $this->model->getTable() . ',id'
             ]);
@@ -362,7 +440,7 @@ abstract class BaseCrudController extends Controller
                 ], 422);
             }
 
-            $ids = $request->ids;
+            $ids = $currentRequest->ids;
             $deletedCount = $this->model->whereIn('id', $ids)->delete();
 
             // Log bulk deletion
@@ -382,7 +460,7 @@ abstract class BaseCrudController extends Controller
         } catch (\Exception $e) {
             Log::error('Bulk deletion failed: ' . $e->getMessage(), [
                 'model' => get_class($this->model),
-                'request_data' => $request->all()
+                'request_data' => request()->all()
             ]);
 
             return response()->json([

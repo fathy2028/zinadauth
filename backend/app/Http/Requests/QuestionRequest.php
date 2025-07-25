@@ -79,6 +79,9 @@ class QuestionRequest extends FormRequest
             ],
             'answer' => [
                 'nullable',
+                'array',
+            ],
+            'answer.*' => [
                 'integer',
                 'min:0',
             ],
@@ -146,8 +149,9 @@ class QuestionRequest extends FormRequest
             'choices_ar.*.string' => 'Each Arabic choice must be a string.',
             'choices_ar.*.max' => 'Each Arabic choice cannot exceed 500 characters.',
             'answer.required' => 'Answer is required for choice-based questions.',
-            'answer.integer' => 'Answer must be a number.',
-            'answer.min' => 'Answer index must be 0 or greater.',
+            'answer.array' => 'Answer must be an array of choice indices.',
+            'answer.*.integer' => 'Each answer must be a number.',
+            'answer.*.min' => 'Each answer index must be 0 or greater.',
             'text_answer.required' => 'Text answer is required for text-based questions.',
             'text_answer.string' => 'Text answer must be a string.',
             'text_answer.max' => 'Text answer cannot exceed 1000 characters.',
