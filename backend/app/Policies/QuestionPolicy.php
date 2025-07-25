@@ -17,9 +17,11 @@ class QuestionPolicy
     public function viewAny(User $user): bool
     {
         // All authenticated users can view questions
-        return $user->hasRole(UserTypeEnum::ADMIN) 
-            || $user->hasRole(UserTypeEnum::FACILITATOR) 
-            || $user->hasRole(UserTypeEnum::PARTICIPANT);
+        return in_array($user->type, [
+            UserTypeEnum::ADMIN->value,
+            UserTypeEnum::FACILITATOR->value,
+            UserTypeEnum::PARTICIPANT->value
+        ]);
     }
 
     /**
@@ -37,7 +39,10 @@ class QuestionPolicy
     public function create(User $user): bool
     {
         // Only admins and facilitators can create questions
-        return $user->hasRole(UserTypeEnum::ADMIN) || $user->hasRole(UserTypeEnum::FACILITATOR);
+        return in_array($user->type, [
+            UserTypeEnum::ADMIN->value,
+            UserTypeEnum::FACILITATOR->value
+        ]);
     }
 
     /**
@@ -62,7 +67,7 @@ class QuestionPolicy
     public function bulkCreate(User $user): bool
     {
         // Only admins can bulk create questions
-        return $user->hasRole(UserTypeEnum::ADMIN);
+        return $user->type === UserTypeEnum::ADMIN->value;
     }
 
     /**
@@ -71,21 +76,21 @@ class QuestionPolicy
     public function bulkDelete(User $user): bool
     {
         // Only admins can bulk delete questions
-        return $user->hasRole(UserTypeEnum::ADMIN);
+        return $user->type === UserTypeEnum::ADMIN->value;
     }
 
     /**
      * Determine whether the user can view answers for questions.
      */
-    public function viewAnswers(User $user, Question $question = null): bool
+    public function viewAnswers(User $user, ?Question $question = null): bool
     {
         // Admins can always view answers
-        if ($user->hasRole(UserTypeEnum::ADMIN)) {
+        if ($user->type === UserTypeEnum::ADMIN->value) {
             return true;
         }
 
         // Facilitators can view answers for their own questions
-        if ($user->hasRole(UserTypeEnum::FACILITATOR)) {
+        if ($user->type === UserTypeEnum::FACILITATOR->value) {
             return $question ? $question->created_by === $user->id : true;
         }
 
@@ -108,7 +113,10 @@ class QuestionPolicy
     public function duplicate(User $user, Question $question): bool
     {
         // Only admins and facilitators can duplicate questions
-        return $user->hasRole(UserTypeEnum::ADMIN) || $user->hasRole(UserTypeEnum::FACILITATOR);
+        return in_array($user->type, [
+            UserTypeEnum::ADMIN->value,
+            UserTypeEnum::FACILITATOR->value
+        ]);
     }
 
     /**
@@ -116,7 +124,9 @@ class QuestionPolicy
      */
     protected function isOwnerOrAdmin(User $user, Question $question): bool
     {
-        return ($user->hasRole(UserTypeEnum::FACILITATOR) && $question->created_by === $user->id)
-            || $user->hasRole(UserTypeEnum::ADMIN);
+
+
+        return ($user->type === UserTypeEnum::FACILITATOR->value && $question->created_by === $user->id)
+            || $user->type === UserTypeEnum::ADMIN->value;
     }
 }
