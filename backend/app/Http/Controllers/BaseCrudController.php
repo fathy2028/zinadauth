@@ -55,6 +55,11 @@ abstract class BaseCrudController extends Controller
     abstract protected function getModel(): Model;
 
     /**
+     * Get the Resource Class instance
+     */
+    abstract protected function getResourceClass(): string;
+
+    /**
      * Get the form request class for index operations
      */
     protected function getIndexFormRequestClass(): string
@@ -172,7 +177,7 @@ abstract class BaseCrudController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Records retrieved successfully',
-                'data' => $results->items(),
+                'data' => $this->getResourceClass()::collection($results->items()),
                 'pagination' => [
                     'current_page' => $results->currentPage(),
                     'last_page' => $results->lastPage(),
@@ -238,7 +243,7 @@ abstract class BaseCrudController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Record created successfully',
-                'data' => $record
+                'data' => $this->getResourceClass()::make($record)
             ], 201);
 
         } catch (\Exception $e) {
@@ -271,7 +276,7 @@ abstract class BaseCrudController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Record found successfully',
-                'data' => $record
+                'data' => $this->getResourceClass()::make($record)
             ], 200);
 
         } catch (ModelNotFoundException $e) {
@@ -339,7 +344,7 @@ abstract class BaseCrudController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Record updated successfully',
-                'data' => $record->fresh()
+                'data' => $this->getResourceClass()::make($record->fresh())
             ], 200);
 
         } catch (ModelNotFoundException $e) {
