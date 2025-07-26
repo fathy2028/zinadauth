@@ -21,7 +21,6 @@ return new class extends Migration
             $table->enum('assignment_type', AssignmentWorkshopTypeEnum::values())->default(AssignmentWorkshopTypeEnum::INTERACTIVE->value);
             $table->boolean('qr_status')->default(true);
             $table->decimal('order_num', 10)->default(0);
-            $table->integer('pin_code')->default(rand(900000, 1000000));
             $table->timestamps();
         });
     }
