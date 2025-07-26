@@ -1,23 +1,19 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Workshop;
 
-use App\Models\User;
 use App\Models\Workshop;
-use App\Enums\UserTypeEnum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Tests\BaseTestClass;
 
-class WorkshopControllerTest extends TestCase
+class WorkshopControllerTest extends BaseTestClass
 {
     use RefreshDatabase, WithFaker;
 
-    /** @test */
-    public function authenticated_users_can_view_workshops_list()
+    public function test_authenticated_users_cannot_view_workshops_list()
     {
-        $this->actingAsJWT($this->participant);
+        $this->actingAsJWT($this->facilitator);
 
         Workshop::factory()->count(5)->create();
 
@@ -30,41 +26,48 @@ class WorkshopControllerTest extends TestCase
                 'data' => [
                     '*' => [
                         'id',
-                        'name',
+                        'title',
                         'description',
-                        'created_at',
-                        'updated_at'
+                        'start_at',
+                        'end_at',
+                        'status',
+                        'qr_status',
+                        'pin_code',
+                        'setting_id',
+                        'created_by',
+                        'created_at'
                     ]
                 ],
                 'pagination' => [
                     'current_page',
                     'last_page',
                     'per_page',
-                    'total'
+                    'total',
+                    'from',
+                    'to'
                 ]
             ]);
     }
 
-    /** @test */
-    public function unauthenticated_users_cannot_access_workshops()
+    public function test_unauthenticated_users_cannot_access_workshops()
     {
         $response = $this->getJson('/api/workshops');
 
         $response->assertStatus(401);
     }
 
-    /** @test */
-    public function admin_can_create_workshop()
+    public function test_admin_can_create_workshop()
     {
         $this->actingAsJWT($this->admin);
 
         $workshopData = [
-            'name' => 'Laravel Advanced Workshop',
-            'description' => 'Deep dive into Laravel framework',
-            'start_date' => '2024-12-01',
-            'end_date' => '2024-12-03',
-            'location' => 'Conference Room A',
-            'max_participants' => 50
+            'title' => 'Admin Workshop',
+            'description' => 'this is the admin workshop',
+            'start_at' => now()->format('Y-m-d'),
+            'end_at' => now()->addDays(3)->format('Y-m-d'),
+            'pin_code' => '123455',
+            'qr_status' => 0,
+            'status' => 'active'
         ];
 
         $response = $this->postJson('/api/workshops', $workshopData);
@@ -76,23 +79,23 @@ class WorkshopControllerTest extends TestCase
             ]);
 
         $this->assertDatabaseHas('workshops', [
-            'name' => 'Laravel Advanced Workshop',
+            'title' => 'Admin Workshop',
             'created_by' => $this->admin->id
         ]);
     }
 
-    /** @test */
-    public function facilitator_can_create_workshops()
+    public function test_facilitator_can_create_workshops()
     {
         $this->actingAsJWT($this->facilitator);
 
         $workshopData = [
-            'name' => 'PHP Best Practices',
-            'description' => 'Learn modern PHP development practices',
-            'start_date' => '2024-12-15',
-            'end_date' => '2024-12-16',
-            'location' => 'Online',
-            'max_participants' => 30
+            'title' => 'Test Workshop',
+            'description' => 'Test Workshop',
+            'start_at' => now()->format('Y-m-d'),
+            'end_at' => now()->addDays(3)->format('Y-m-d'),
+            'pin_code' => '123456',
+            'qr_status' => 0,
+            'status' => 'active'
         ];
 
         $response = $this->postJson('/api/workshops', $workshopData);
@@ -100,18 +103,17 @@ class WorkshopControllerTest extends TestCase
         $response->assertStatus(201);
 
         $this->assertDatabaseHas('workshops', [
-            'name' => 'PHP Best Practices',
+            'title' => 'Test Workshop',
             'created_by' => $this->facilitator->id
         ]);
     }
 
-    /** @test */
-    public function participant_cannot_create_workshops()
+    public function test_participant_cannot_create_workshops()
     {
         $this->actingAsJWT($this->participant);
 
         $workshopData = [
-            'name' => 'Unauthorized Workshop',
+            'title' => 'Unauthorized Workshop',
             'description' => 'This should not be created'
         ];
 
@@ -120,8 +122,7 @@ class WorkshopControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
-    public function it_validates_workshop_creation_data()
+    public function test_validates_workshop_creation_data()
     {
         $this->actingAsJWT($this->facilitator);
 
@@ -129,24 +130,23 @@ class WorkshopControllerTest extends TestCase
         $response = $this->postJson('/api/workshops', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name']);
+            ->assertJsonValidationErrors(['title']);
 
         // Invalid date format
         $response = $this->postJson('/api/workshops', [
-            'name' => 'Valid Workshop',
-            'start_date' => 'invalid-date'
+            'title' => 'Valid Workshop',
+            'start_at' => 'invalid-date'
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['start_date']);
+            ->assertJsonValidationErrors(['start_at']);
     }
 
-    /** @test */
-    public function authenticated_users_can_view_specific_workshop()
+    public function test_authenticated_users_can_view_specific_workshop()
     {
-        $this->actingAsJWT($this->participant);
+        $this->actingAsJWT($this->facilitator);
 
-        $workshop = Workshop::factory()->create();
+        $workshop = Workshop::factory()->create(['created_by' => $this->facilitator->id]);
 
         $response = $this->getJson("/api/workshops/{$workshop->id}");
 
@@ -157,8 +157,7 @@ class WorkshopControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function it_returns_404_for_non_existent_workshop()
+    public function test_returns_404_for_non_existent_workshop()
     {
         $this->actingAsJWT($this->participant);
 
@@ -167,15 +166,14 @@ class WorkshopControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    /** @test */
-    public function facilitator_can_update_own_workshop()
+    public function test_facilitator_can_update_own_workshop()
     {
         $this->actingAsJWT($this->facilitator);
 
         $workshop = Workshop::factory()->create(['created_by' => $this->facilitator->id]);
 
         $updateData = [
-            'name' => 'Updated Workshop Name',
+            'title' => 'Updated Workshop Name',
             'description' => 'Updated description'
         ];
 
@@ -189,30 +187,123 @@ class WorkshopControllerTest extends TestCase
 
         $this->assertDatabaseHas('workshops', [
             'id' => $workshop->id,
-            'name' => 'Updated Workshop Name'
+            'title' => 'Updated Workshop Name'
         ]);
     }
 
-    /** @test */
-    public function facilitator_cannot_update_others_workshop()
+    public function test_facilitator_cannot_update_others_workshop()
     {
         $this->actingAsJWT($this->facilitator);
 
         $workshop = Workshop::factory()->create(['created_by' => $this->admin->id]);
 
         $response = $this->putJson("/api/workshops/{$workshop->id}", [
-            'name' => 'Trying to update'
+            'title' => 'Trying to update'
         ]);
 
         $response->assertStatus(403);
     }
 
-    /** @test */
-    public function admin_can_update_any_workshop()
+    public function test_admin_can_update_any_workshop()
     {
         $this->actingAsJWT($this->admin);
 
         $workshop = Workshop::factory()->create(['created_by' => $this->facilitator->id]);
 
         $response = $this->putJson("/api/workshops/{$workshop->id}", [
-            'name' => 'Admin updated this'
+            'title' => 'Admin updated this'
+        ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('workshops', [
+            'id' => $workshop->id,
+            'title' => 'Admin updated this'
+        ]);
+    }
+
+    public function test_facilitator_can_delete_own_workshop()
+    {
+        $this->actingAsJWT($this->facilitator);
+
+        $workshop = Workshop::factory()->create(['created_by' => $this->facilitator->id]);
+
+        $response = $this->deleteJson("/api/workshops/{$workshop->id}");
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'success' => true,
+                'message' => 'Record deleted successfully'
+            ]);
+
+        $this->assertDatabaseMissing('workshops', ['id' => $workshop->id]);
+    }
+
+    public function test_facilitator_cannot_delete_others_workshop()
+    {
+        $this->actingAsJWT($this->facilitator);
+
+        $workshop = Workshop::factory()->create(['created_by' => $this->admin->id]);
+
+        $response = $this->deleteJson("/api/workshops/{$workshop->id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('workshops', ['id' => $workshop->id]);
+    }
+
+    public function test_admin_can_delete_any_workshop()
+    {
+        $this->actingAsJWT($this->admin);
+
+        $workshop = Workshop::factory()->create(['created_by' => $this->facilitator->id]);
+
+        $response = $this->deleteJson("/api/workshops/{$workshop->id}");
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('workshops', ['id' => $workshop->id]);
+    }
+
+    public function test_participant_cannot_delete_workshops()
+    {
+        $this->actingAsJWT($this->participant);
+
+        $workshop = Workshop::factory()->create();
+
+        $response = $this->deleteJson("/api/workshops/{$workshop->id}");
+
+        $response->assertStatus(403);
+    }
+    public function test_users_can_paginate_workshops()
+    {
+        $this->actingAsJWT($this->participant);
+
+        Workshop::factory()->count(20)->create();
+
+        $response = $this->getJson('/api/workshops?limit=5');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(5, 'data')
+            ->assertJson([
+                'pagination' => [
+                    'per_page' => 5,
+                    'total' => 20
+                ]
+            ]);
+    }
+
+    public function test_respects_pagination_limits()
+    {
+        $this->actingAsJWT($this->participant);
+
+        Workshop::factory()->count(150)->create();
+
+        $response = $this->getJson('/api/workshops?limit=200'); // Exceeds max limit
+
+        $response->assertStatus(200);
+
+        $pagination = $response->json('pagination');
+        $this->assertLessThanOrEqual(100, $pagination['per_page']); // Max limit is 100
+    }
+}

@@ -6,13 +6,14 @@ use App\Enums\WorkshopStatusTypeEnum;
 use App\Support\Traits\HasCreatedBy;
 use App\Support\Traits\UseCommonScopes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class Workshop extends Model
 {
-    use HasUuids, HasCreatedBy, UseCommonScopes;
+    use HasUuids, HasCreatedBy, UseCommonScopes, HasFactory;
 
     protected $fillable = [
         'title',
