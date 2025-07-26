@@ -86,6 +86,11 @@ class QuestionController extends BaseCrudController
         return new Question();
     }
 
+    protected function getResourceClass(): string
+    {
+        return QuestionResource::class;
+    }
+
     /**
      * Display a listing of questions with advanced filtering
      */
@@ -307,7 +312,7 @@ class QuestionController extends BaseCrudController
             $this->authorize('viewAny', Question::class);
 
             $questionType = QuestionTypeEnum::tryFrom($type);
-            
+
             if (!$questionType) {
                 return ApiResponse::error('Invalid question type', 400);
             }
@@ -334,7 +339,7 @@ class QuestionController extends BaseCrudController
             $this->authorize('viewAny', Question::class);
 
             $questionType = QuestionTypeEnum::tryFrom($type);
-            
+
             if (!$questionType) {
                 return ApiResponse::error('Invalid question type', 400);
             }

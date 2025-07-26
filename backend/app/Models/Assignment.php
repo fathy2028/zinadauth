@@ -38,7 +38,6 @@ class Assignment extends Model
                 'assignment_type',
                 'qr_status',
                 'order_num',
-                'pin_code'
             ]);
     }
 }

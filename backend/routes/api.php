@@ -16,9 +16,16 @@ use App\Http\Controllers\QuestionController;
 |
 */
 
+Route::group(['as' => 'api.'], static function () {
+    require __DIR__ . '/api.routes/workshop.php';
+});
+
+
 // Public routes
 Route::post('/register', [UserController::class, 'register'])->middleware('throttle:3,1');
 Route::post('/login', [UserController::class, 'login'])->name('login');
+
+
 
 // Protected routes (require JWT token)
 Route::middleware('auth:api')->group(function () {
@@ -51,5 +58,7 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('/users/{id}/deactivate', [UserController::class, 'deactivate']);
         Route::post('/users/bulk-delete', [UserController::class, 'bulkDelete']);
     });
+
+
 
 });
