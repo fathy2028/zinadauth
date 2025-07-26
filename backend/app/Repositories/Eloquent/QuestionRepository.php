@@ -146,12 +146,12 @@ class QuestionRepository extends BaseRepository implements QuestionRepositoryInt
      */
     public function bulkCreate(array $questionsData): Collection
     {
-        $questions = collect();
+        $questions = [];
 
         foreach ($questionsData as $questionData) {
             try {
                 $question = $this->createQuestion($questionData);
-                $questions->push($question);
+                $questions[] = $question;
             } catch (\Exception $e) {
                 Log::error('Failed to create question in bulk: ' . $e->getMessage(), [
                     'question_data' => $questionData
@@ -159,7 +159,8 @@ class QuestionRepository extends BaseRepository implements QuestionRepositoryInt
             }
         }
 
-        return $questions;
+        // Convert array to Eloquent Collection
+        return new Collection($questions);
     }
 
     /**

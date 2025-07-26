@@ -3,8 +3,8 @@
 		"_postman_id": "d82a3246-d1c7-4241-8144-cf92f5093a11",
 		"name": "Workshop System API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "46935019",
-		"_collection_link": "https://zinad-team.postman.co/workspace/Team-Workspace~7407359a-0139-4836-86f4-cf7503c22321/collection/46935019-d82a3246-d1c7-4241-8144-cf92f5093a11?action=share&source=collection_link&creator=46935019"
+		"_exporter_id": "36782927",
+		"_collection_link": "https://zinad-team.postman.co/workspace/Team-Workspace~7407359a-0139-4836-86f4-cf7503c22321/collection/46935019-d82a3246-d1c7-4241-8144-cf92f5093a11?action=share&source=collection_link&creator=36782927"
 	},
 	"item": [
 		{
@@ -528,6 +528,107 @@
 							"pm.environment.set('token', response.data?.token);"
 						]
 					}
+				}
+			]
+		},
+		{
+			"name": "Questions",
+			"item": [
+				{
+					"name": "getquestions",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "create_questions",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "get_question_by_id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "update_question",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "delete_question",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "get_sin_choice",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "get_random_single",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "duplicate_question",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Question Statistics",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Search Questions",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Create Questions",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
 				}
 			]
 		}
