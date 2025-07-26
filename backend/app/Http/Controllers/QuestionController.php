@@ -107,6 +107,8 @@ class QuestionController extends BaseCrudController
                 'type' => $request->get('type'),
                 'created_by' => $request->get('created_by'),
                 'min_points' => $request->get('min_points'),
+                'max_points' => $request->get('max_points'),
+                'min_duration' => $request->get('min_duration'),
                 'max_duration' => $request->get('max_duration'),
                 'search' => $request->get('search'),
             ];
@@ -144,9 +146,10 @@ class QuestionController extends BaseCrudController
      */
     public function store(): JsonResponse
     {
+        // Check authorization
+        $this->authorize('create', Question::class);
+
         try {
-            // Check authorization
-            $this->authorize('create', Question::class);
 
             // Simplified approach: Use direct validation with QuestionRequest rules
             $currentRequest = request();
@@ -178,7 +181,7 @@ class QuestionController extends BaseCrudController
                 'errors' => $e->errors(),
                 'message' => $e->getMessage()
             ]);
-            return ApiResponse::error('Validation failed', 422, ['errors' => $e->errors()]);
+            return ApiResponse::error('Validation failed', 422, $e->errors());
         } catch (Exception $e) {
             Log::error('Exception in store', [
                 'message' => $e->getMessage(),
@@ -233,16 +236,17 @@ class QuestionController extends BaseCrudController
      */
     public function update($id): JsonResponse
     {
+        // Find the question first for authorization
+        $question = $this->questionRepository->find($id);
+
+        if (!$question) {
+            return ApiResponse::error('Question not found', 404);
+        }
+
+        // Check authorization
+        $this->authorize('update', $question);
+
         try {
-            // Find the question first for authorization
-            $question = $this->questionRepository->find($id);
-
-            if (!$question) {
-                return ApiResponse::error('Question not found', 404);
-            }
-
-            // Check authorization
-            $this->authorize('update', $question);
 
             // Get the form request instance (QuestionRequest)
             $request = $this->resolveFormRequest('update');
@@ -274,15 +278,16 @@ class QuestionController extends BaseCrudController
      */
     public function destroy($id): JsonResponse
     {
+        $question = $this->questionRepository->find($id);
+
+        if (!$question) {
+            return ApiResponse::error('Question not found', 404);
+        }
+
+        // Check authorization
+        $this->authorize('delete', $question);
+
         try {
-            $question = $this->questionRepository->find($id);
-
-            if (!$question) {
-                return ApiResponse::error('Question not found', 404);
-            }
-
-            // Check authorization
-            $this->authorize('delete', $question);
 
             // Check if question is used in any assignments
             if ($question->assignments()->exists()) {
@@ -444,9 +449,10 @@ class QuestionController extends BaseCrudController
      */
     public function bulkCreate(): JsonResponse
     {
+        // Check authorization
+        $this->authorize('bulkCreate', Question::class);
+
         try {
-            // Check authorization
-            $this->authorize('bulkCreate', Question::class);
 
             // Use the same approach as store method
             $currentRequest = request();
@@ -477,9 +483,10 @@ class QuestionController extends BaseCrudController
      */
     public function bulkDelete(): JsonResponse
     {
+        // Check authorization
+        $this->authorize('bulkDelete', Question::class);
+
         try {
-            // Check authorization
-            $this->authorize('bulkDelete', Question::class);
 
             // Use the same approach as store method
             $currentRequest = request();

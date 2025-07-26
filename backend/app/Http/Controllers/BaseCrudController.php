@@ -194,7 +194,7 @@ abstract class BaseCrudController extends Controller
             // Log the error for debugging
             Log::error('Error retrieving records: ' . $e->getMessage(), [
                 'model' => get_class($this->model),
-                'request' => $request->all()
+                'request' => $currentRequest->all()
             ]);
 
             return response()->json([
@@ -440,7 +440,7 @@ abstract class BaseCrudController extends Controller
 
             $validator = Validator::make($currentRequest->all(), [
                 'ids' => 'required|array|min:1',
-                'ids.*' => 'integer|exists:' . $this->model->getTable() . ',id'
+                'ids.*' => 'string|exists:' . $this->model->getTable() . ',id'
             ]);
 
             if ($validator->fails()) {

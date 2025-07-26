@@ -31,7 +31,11 @@ abstract class BaseRepository
     public function update($id, array $attributes)
     {
         $record = $this->find($id);
-        return $record ? $record->update($attributes) : null;
+        if ($record) {
+            $record->update($attributes);
+            return $record->fresh();
+        }
+        return null;
     }
 
     public function delete($id)
