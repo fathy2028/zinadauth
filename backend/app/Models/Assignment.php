@@ -40,4 +40,11 @@ class Assignment extends Model
                 'order_num',
             ]);
     }
+
+    public function questions(): BelongsToMany
+    {
+        return $this->belongsToMany(Question::class, 'assignment_questions')
+            ->withPivot('question_order')
+            ->withTimestamps();;
+    }
 }
