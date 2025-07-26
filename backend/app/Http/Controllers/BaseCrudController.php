@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Workshop;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Model;
@@ -126,6 +127,7 @@ abstract class BaseCrudController extends Controller
     public function index(): JsonResponse
     {
         try {
+            $this->authorize('viewAny', $this->model);
             // Use direct validation approach
             $currentRequest = request();
 
@@ -212,6 +214,7 @@ abstract class BaseCrudController extends Controller
     public function store(): JsonResponse
     {
         try {
+            $this->authorize('create', $this->model);
             // Use direct validation approach
             $currentRequest = request();
 
@@ -270,8 +273,8 @@ abstract class BaseCrudController extends Controller
     public function show($id): JsonResponse
     {
         try {
-            // Find the record by ID or throw an exception if not found
             $record = $this->model->findOrFail($id);
+            $this->authorize('view', $record);
 
             return response()->json([
                 'success' => true,
@@ -309,6 +312,9 @@ abstract class BaseCrudController extends Controller
     public function update($id): JsonResponse
     {
         try {
+            $record = $this->model->findOrFail($id);
+            $this->authorize('edit', $record);
+
             // Use direct validation approach
             $currentRequest = request();
 
@@ -328,7 +334,6 @@ abstract class BaseCrudController extends Controller
             }
 
             // Find the record to update
-            $record = $this->model->findOrFail($id);
 
             // Update the record with validated data
             $record->update($validatedData);
@@ -380,6 +385,7 @@ abstract class BaseCrudController extends Controller
         try {
             // Find the record to delete
             $record = $this->model->findOrFail($id);
+            $this->authorize('delete', $record);
 
             // Store information for logging before deletion
             $modelClass = get_class($this->model);
