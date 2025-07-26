@@ -14,7 +14,11 @@ class WorkshopPolicy
     public function viewAny(User $user): bool
     {
         // use the roles to authorize till we know what permissions for each role.
-        return $user->hasRole(UserTypeEnum::ADMIN);
+        return in_array($user->type, [
+            UserTypeEnum::ADMIN->value,
+            UserTypeEnum::FACILITATOR->value,
+            UserTypeEnum::PARTICIPANT->value
+        ]);
     }
 
     public function view(User $user, Workshop $workshop): bool
