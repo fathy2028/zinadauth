@@ -33,6 +33,11 @@ class UserController extends BaseCrudController
         return new User();
     }
 
+    protected function getResourceClass(): string
+    {
+        return UserResource::class;
+    }
+
     /**
      * Get the form request class for store operations
      */
@@ -49,7 +54,7 @@ class UserController extends BaseCrudController
         return UserUpdateRequest::class;
     }
 
-    
+
     public function register(RegisterRequest $request)
     {
         try {

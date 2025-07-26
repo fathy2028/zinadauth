@@ -75,6 +75,7 @@ class Question extends Model
     public function assignments(): BelongsToMany
     {
         return $this->belongsToMany(Assignment::class, 'assignment_questions')
+                    ->using(AssignmentQuestion::class)
                     ->withPivot('question_order')
                     ->withTimestamps();
     }
@@ -198,11 +199,15 @@ class Question extends Model
      */
     public function getDifficulty(): string
     {
-        $score = ($this->points / 10) + (10 - $this->duration);
-        
-        if ($score <= 5) {
+        // Normalize points (0-100 scale) and duration (inverse relationship - shorter time = harder)
+        $pointsScore = $this->points / 10; // 0-10 scale
+        $durationScore = max(0, 10 - ($this->duration / 60)); // Convert seconds to minutes, inverse scale
+
+        $score = $pointsScore + $durationScore;
+
+        if ($score <= 6) {
             return 'easy';
-        } elseif ($score <= 10) {
+        } elseif ($score <= 12) {
             return 'medium';
         } else {
             return 'hard';

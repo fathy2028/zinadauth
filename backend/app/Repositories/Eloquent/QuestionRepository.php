@@ -63,7 +63,12 @@ class QuestionRepository extends BaseRepository implements QuestionRepositoryInt
             });
         }
 
-        return $query->with('creator')->orderBy('created_at', 'desc')->paginate($perPage);
+        // Apply sorting
+        $sortBy = $filters['sort_by'] ?? 'created_at';
+        $sortOrder = $filters['sort_order'] ?? 'desc';
+        $query->orderBy($sortBy, $sortOrder);
+
+        return $query->with('creator')->paginate($perPage);
     }
 
     /**
@@ -161,6 +166,14 @@ class QuestionRepository extends BaseRepository implements QuestionRepositoryInt
 
         // Convert array to Eloquent Collection
         return new Collection($questions);
+    }
+
+    /**
+     * Bulk delete questions
+     */
+    public function bulkDelete(array $ids): int
+    {
+        return $this->model->whereIn('id', $ids)->delete();
     }
 
     /**

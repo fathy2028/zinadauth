@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\WorkshopRepository;
+use App\Repositories\Interfaces\WorkshopRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\Eloquent\UserRepository;
@@ -19,6 +21,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(QuestionRepositoryInterface::class, QuestionRepository::class);
+        $this->app->bind(WorkshopRepositoryInterface::class, WorkshopRepository::class);
     }
 
     /**

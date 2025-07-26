@@ -19,11 +19,11 @@ return new class extends Migration
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
             $table->uuid('created_by');
-            $table->uuid('setting_id');
+            $table->uuid('setting_id')->nullable();
             $table->boolean('is_deleted')->default(false);
             $table->boolean('qr_status')->default(true);
             $table->enum('status', WorkshopStatusTypeEnum::values())->default(WorkshopStatusTypeEnum::INACTIVE->value);
-            $table->integer('pin_code')->default(rand(900000, 1000000));
+            $table->integer('pin_code')->default(rand(900000, 1000000))->unique();
             $table->timestamps();
         });
     }

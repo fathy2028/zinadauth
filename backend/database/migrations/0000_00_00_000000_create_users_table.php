@@ -26,7 +26,6 @@ return new class extends Migration {
             $table->text('image')->nullable();
             $table->enum('type', UserTypeEnum::values())->default(UserTypeEnum::PARTICIPANT->value);
             $table->enum('theme', UserThemeEnum::values())->default(UserThemeEnum::LIGHT->value);
-            // $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->string('web_engine')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_deleted')->default(false);
