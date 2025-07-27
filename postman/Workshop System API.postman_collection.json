@@ -3,8 +3,8 @@
 		"_postman_id": "d82a3246-d1c7-4241-8144-cf92f5093a11",
 		"name": "Workshop System API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "36782927",
-		"_collection_link": "https://zinad-team.postman.co/workspace/Team-Workspace~7407359a-0139-4836-86f4-cf7503c22321/collection/46935019-d82a3246-d1c7-4241-8144-cf92f5093a11?action=share&source=collection_link&creator=36782927"
+		"_exporter_id": "46935019",
+		"_collection_link": "https://zinad-team.postman.co/workspace/7407359a-0139-4836-86f4-cf7503c22321/collection/46935019-d82a3246-d1c7-4241-8144-cf92f5093a11?action=share&source=collection_link&creator=46935019"
 	},
 	"item": [
 		{
@@ -16,41 +16,22 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "name",
-									"value": "Ahmed",
-									"description": "required, string, max:255, min:2",
-									"type": "text"
-								},
-								{
-									"key": "email",
-									"value": "ahmed@email.com",
-									"description": "required, string, max:255",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "Pass23ord@123",
-									"description": "required, letters, numbers, symbols",
-									"type": "text"
-								},
-								{
-									"key": "password_confirmation",
-									"value": "Pass23ord@123",
-									"description": "required, matches the password field",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Ahmed\",\n    \"email\": \"ahmed@email.com\",\n    \"password\": \"Pass23ord@123\",\n    \"password_confirmation\": \"Pass23ord@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/api/register",
+							"raw": "{{baseURL}}/api/auth/register",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"api",
+								"auth",
 								"register"
 							]
 						}
@@ -91,10 +72,12 @@
 									]
 								},
 								"url": {
-									"raw": "{{baseURL}}/api/register",
+									"raw": "http://localhost:8000/api/register",
+									"protocol": "http",
 									"host": [
-										"{{baseURL}}"
+										"localhost"
 									],
+									"port": "8000",
 									"path": [
 										"api",
 										"register"
@@ -250,27 +233,22 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "email",
-									"value": "ahmed@email.com",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "Pass23ord@123",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"ahmed@email.com\",\n    \"password\": \"Pass23ord@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/api/login",
+							"raw": "{{baseURL}}/api/auth/login",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"api",
+								"auth",
 								"login"
 							]
 						}
@@ -436,12 +414,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/api/logout",
+							"raw": "{{baseURL}}/api/auth/logout",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"api",
+								"auth",
 								"logout"
 							]
 						}
@@ -453,10 +432,12 @@
 								"method": "POST",
 								"header": [],
 								"url": {
-									"raw": "{{baseURL}}/api/logout",
+									"raw": "http://localhost:8000/api/logout",
+									"protocol": "http",
 									"host": [
-										"{{baseURL}}"
+										"localhost"
 									],
+									"port": "8000",
 									"path": [
 										"api",
 										"logout"
@@ -623,7 +604,7 @@
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "Delete Bulk",
 					"request": {
 						"method": "GET",
 						"header": []
@@ -631,8 +612,1106 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Workshops",
+			"item": [
+				{
+					"name": "Get Workshops",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/workshops",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"workshops"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/workshops",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:30:03 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Records retrieved successfully\",\n    \"data\": [\n        {\n            \"id\": \"01984759-63e8-7322-b6aa-24a570f10d52\",\n            \"title\": \"This is a title\",\n            \"description\": \"This is a description\",\n            \"start_at\": \"2025-12-23\",\n            \"end_at\": \"2025-12-25\",\n            \"status\": \"active\",\n            \"qr_status\": false,\n            \"pin_code\": 123455,\n            \"setting_id\": null,\n            \"created_by\": {\n                \"id\": \"01984758-9726-7335-8045-425f8c4ea129\",\n                \"name\": \"Ahmed\"\n            },\n            \"created_at\": \"2025-07-26T15:28:17.000000Z\"\n        }\n    ],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 15,\n        \"total\": 1,\n        \"from\": 1,\n        \"to\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Workshop by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/workshops/01984792-cac5-7021-8bf8-6737eaeb005",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"workshops",
+								"01984792-cac5-7021-8bf8-6737eaeb005"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01984792-cac5-7021-8bf8-6737eae7b005",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01984792-cac5-7021-8bf8-6737eae7b005"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:38:54 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record found successfully\",\n    \"data\": {\n        \"id\": \"01984792-cac5-7021-8bf8-6737eae7b005\",\n        \"title\": \"This is a title\",\n        \"description\": \"This is a description\",\n        \"start_at\": \"2025-12-23\",\n        \"end_at\": \"2025-12-25\",\n        \"status\": \"active\",\n        \"qr_status\": false,\n        \"pin_code\": 123458,\n        \"setting_id\": null,\n        \"created_by\": {\n            \"id\": \"01984758-9726-7335-8045-425f8c4ea129\",\n            \"name\": \"Ahmed\"\n        },\n        \"created_at\": \"2025-07-26T16:30:59.000000Z\"\n    }\n}"
+						},
+						{
+							"name": "404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01984792-cac5-7021-8bf8-6737eaeb005",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01984792-cac5-7021-8bf8-6737eaeb005"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:39:07 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"Record not found\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Store Workshop",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\" : \"This is a title\",\n    \"description\": \"This is a description\",\n    \"start_at\": \"2025-12-23\",\n    \"end_at\": \"2025-12-25\",\n    \"pin_code\": \"123455\",\n    \"qr_status\": 0,\n    \"status\": \"active\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/workshops",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"workshops"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"This is a title\",\n    \"description\": \"This is a description\",\n    \"start_at\": \"2025-12-23\",\n    \"end_at\": \"2025-12-25\",\n    \"pin_code\": \"123455\",\n    \"qr_status\": 0,\n    \"status\": \"active\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/workshops",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 27 Jul 2025 07:48:52 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record created successfully\",\n    \"data\": {\n        \"id\": \"01984adb-2641-700b-a6d0-1a4b7d536767\",\n        \"title\": \"This is a title\",\n        \"description\": \"This is a description\",\n        \"start_at\": \"2025-12-23\",\n        \"end_at\": \"2025-12-25\",\n        \"status\": \"active\",\n        \"qr_status\": false,\n        \"pin_code\": \"123455\",\n        \"setting_id\": null,\n        \"created_by\": {\n            \"id\": \"01984ac5-8bd8-724b-9f43-bcab5d641477\",\n            \"name\": \"Ahmed\"\n        },\n        \"created_at\": \"2025-07-27T07:48:52.000000Z\"\n    }\n}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"This is a title\",\n    \"description\": \"This is a description\",\n    \"start_at\": \"2025-12-23\",\n    \"end_at\": \"2025-12-25\",\n    \"pin_code\": \"123455\",\n    \"qr_status\": 0,\n    \"status\": \"active\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/workshops",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 27 Jul 2025 07:46:19 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"error\",\n    \"message\": \"Unauthorized access\",\n    \"errors\": []\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Workshop",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\" : \"This is a title Updated\"\n    // \"description\": \"This is a description\",\n    // \"start_at\": \"2025-12-23\",\n    // \"end_at\": \"2025-12-25\",\n    // \"pin_code\": \"123455\",\n    // \"qr_status\": 0,\n    // \"status\": \"active\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/workshops/01984792-cac5-7021-8bf8-6737eae7b005",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"workshops",
+								"01984792-cac5-7021-8bf8-6737eae7b005"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"This is a title Updated\"\n    // \"description\": \"This is a description\",\n    // \"start_at\": \"2025-12-23\",\n    // \"end_at\": \"2025-12-25\",\n    // \"pin_code\": \"123455\",\n    // \"qr_status\": 0,\n    // \"status\": \"active\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01984759-63e8-7322-b6aa-24a570f10d52",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01984759-63e8-7322-b6aa-24a570f10d52"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:35:52 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record updated successfully\",\n    \"data\": {\n        \"id\": \"01984759-63e8-7322-b6aa-24a570f10d52\",\n        \"title\": \"This is a title Updated\",\n        \"description\": \"This is a description\",\n        \"start_at\": \"2025-12-23\",\n        \"end_at\": \"2025-12-25\",\n        \"status\": \"active\",\n        \"qr_status\": false,\n        \"pin_code\": 123455,\n        \"setting_id\": null,\n        \"created_by\": {\n            \"id\": \"01984758-9726-7335-8045-425f8c4ea129\",\n            \"name\": \"Ahmed\"\n        },\n        \"created_at\": \"2025-07-26T15:28:17.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Workshop",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/workshops/01984759-63e8-7322-b6aa-24a570f10d52",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"workshops",
+								"01984759-63e8-7322-b6aa-24a570f10d52"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01984759-63e8-7322-b6aa-24a570f10d52",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01984759-63e8-7322-b6aa-24a570f10d52"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:37:20 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record deleted successfully\"\n}"
+						},
+						{
+							"name": "Workshop not found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01984759-63e8-7322-b6aa-24a570f10d52",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01984759-63e8-7322-b6aa-24a570f10d52"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:37:28 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"Record not found\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Assignments",
+			"item": [
+				{
+					"name": "Get Assingnments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/assignments",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"assignments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assignemnts by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/workshops/01984792-cac5-7021-8bf8-6737eaeb005",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"workshops",
+								"01984792-cac5-7021-8bf8-6737eaeb005"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01984792-cac5-7021-8bf8-6737eaeb005",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01984792-cac5-7021-8bf8-6737eaeb005"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:39:07 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"Record not found\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Store Assignments",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\" : \"This is a title\",\n    \"description\": \"This is a description\",\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/assignments",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"assignments"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"This is a title\",\n    \"description\": \"This is a description\",\n    \"start_at\": \"2025-12-23\",\n    \"end_at\": \"2025-12-25\",\n    \"pin_code\": \"123458\",\n    \"qr_status\": 0,\n    \"status\": \"active\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/workshops",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:30:59 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record created successfully\",\n    \"data\": {\n        \"id\": \"01984792-cac5-7021-8bf8-6737eae7b005\",\n        \"title\": \"This is a title\",\n        \"description\": \"This is a description\",\n        \"start_at\": \"2025-12-23\",\n        \"end_at\": \"2025-12-25\",\n        \"status\": \"active\",\n        \"qr_status\": false,\n        \"pin_code\": \"123458\",\n        \"setting_id\": null,\n        \"created_by\": {\n            \"id\": \"01984758-9726-7335-8045-425f8c4ea129\",\n            \"name\": \"Ahmed\"\n        },\n        \"created_at\": \"2025-07-26T16:30:59.000000Z\"\n    }\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"This is a title\",\n    \"description\": \"This is a description\",\n    \"start_at\": \"2025-12-23\",\n    \"end_at\": \"2025-12-25\",\n    \"pin_code\": \"123455\",\n    \"qr_status\": 0,\n    \"status\": \"active\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/workshops",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:30:08 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"Failed to create record\",\n    \"error\": \"The pin code has already been taken.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Assignments",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\" : \"This is a title Updated\"\n    // \"description\": \"This is a description\",\n    // \"start_at\": \"2025-12-23\",\n    // \"end_at\": \"2025-12-25\",\n    // \"pin_code\": \"123455\",\n    // \"qr_status\": 0,\n    // \"status\": \"active\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/workshops/01984792-cac5-7021-8bf8-6737eae7b005",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"workshops",
+								"01984792-cac5-7021-8bf8-6737eae7b005"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"This is a title Updated\"\n    // \"description\": \"This is a description\",\n    // \"start_at\": \"2025-12-23\",\n    // \"end_at\": \"2025-12-25\",\n    // \"pin_code\": \"123455\",\n    // \"qr_status\": 0,\n    // \"status\": \"active\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01984759-63e8-7322-b6aa-24a570f10d52",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01984759-63e8-7322-b6aa-24a570f10d52"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:35:52 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record updated successfully\",\n    \"data\": {\n        \"id\": \"01984759-63e8-7322-b6aa-24a570f10d52\",\n        \"title\": \"This is a title Updated\",\n        \"description\": \"This is a description\",\n        \"start_at\": \"2025-12-23\",\n        \"end_at\": \"2025-12-25\",\n        \"status\": \"active\",\n        \"qr_status\": false,\n        \"pin_code\": 123455,\n        \"setting_id\": null,\n        \"created_by\": {\n            \"id\": \"01984758-9726-7335-8045-425f8c4ea129\",\n            \"name\": \"Ahmed\"\n        },\n        \"created_at\": \"2025-07-26T15:28:17.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Assignments",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/assignments/01984759-63e8-7322-b6aa-24a570f10d52",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"assignments",
+								"01984759-63e8-7322-b6aa-24a570f10d52"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01984759-63e8-7322-b6aa-24a570f10d52",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01984759-63e8-7322-b6aa-24a570f10d52"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:37:20 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record deleted successfully\"\n}"
+						},
+						{
+							"name": "Workshop not found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01984759-63e8-7322-b6aa-24a570f10d52",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01984759-63e8-7322-b6aa-24a570f10d52"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 26 Jul 2025 16:37:28 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"Record not found\"\n}"
+						}
+					]
+				}
+			]
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
