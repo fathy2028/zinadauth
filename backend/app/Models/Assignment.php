@@ -29,14 +29,6 @@ class Assignment extends Model
         'question_order' => AssignmentQuestionOrderEnum::class,
     ];
 
-    public function questions(): BelongsToMany
-    {
-        return $this->belongsToMany(Question::class, 'assignment_questions')
-            ->using(AssignmentQuestion::class)
-            ->withPivot(['question_order'])
-            ->withTimestamps();
-    }
-
     public function workshops(): BelongsToMany
     {
         return $this->belongsToMany(Workshop::class, 'assignment_workshops')

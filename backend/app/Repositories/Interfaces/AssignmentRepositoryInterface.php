@@ -3,4 +3,4 @@
 namespace App\Repositories\Interfaces;
 
 
-interface AssignmentRepositoryInterface {}
+interface AssignmentRepositoryInterface extends BaseRepositoryInterface {}
