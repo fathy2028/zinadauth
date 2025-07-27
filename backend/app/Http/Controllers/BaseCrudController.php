@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Workshop;
+use App\Support\Traits\HandlesExceptions;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +24,7 @@ use App\Support\Traits\HandlesFormRequests;
  */
 abstract class BaseCrudController extends Controller
 {
-    use HandlesFormRequests;
+    use HandlesFormRequests, HandlesExceptions;
     /**
      * The Eloquent model instance
      */
@@ -117,44 +118,7 @@ abstract class BaseCrudController extends Controller
         $this->model = $this->getModel();
     }
 
-    /**
-     * Handle common exceptions and return appropriate JSON responses
-     */
-    protected function handleException(\Exception $e, string $operation = 'operation', array $context = []): JsonResponse
-    {
-        if ($e instanceof AuthorizationException) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized access'
-            ], 403);
-        }
 
-        if ($e instanceof ValidationException) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        }
-
-        if ($e instanceof ModelNotFoundException) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Record not found'
-            ], 404);
-        }
-
-        // Log unexpected errors
-        Log::error("Failed to {$operation}: " . $e->getMessage(), array_merge([
-            'model' => get_class($this->model),
-        ], $context));
-
-        return response()->json([
-            'success' => false,
-            'message' => "Failed to {$operation}",
-            'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-        ], 500);
-    }
 
     /**
      * Get all records with optional search and pagination
