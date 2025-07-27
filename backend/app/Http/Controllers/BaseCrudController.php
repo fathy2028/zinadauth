@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Workshop;
+use App\Support\Traits\HandlesExceptions;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Auth\Access\AuthorizationException;
 use App\Support\Traits\HandlesFormRequests;
 
 /**
@@ -22,7 +24,7 @@ use App\Support\Traits\HandlesFormRequests;
  */
 abstract class BaseCrudController extends Controller
 {
-    use HandlesFormRequests;
+    use HandlesFormRequests, HandlesExceptions;
     /**
      * The Eloquent model instance
      */
@@ -116,6 +118,8 @@ abstract class BaseCrudController extends Controller
         $this->model = $this->getModel();
     }
 
+
+
     /**
      * Get all records with optional search and pagination
      *
@@ -191,17 +195,9 @@ abstract class BaseCrudController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            // Log the error for debugging
-            Log::error('Error retrieving records: ' . $e->getMessage(), [
-                'model' => get_class($this->model),
-                'request' => $currentRequest->all()
+            return $this->handleException($e, 'retrieve records', [
+                'request' => request()->all()
             ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve records',
-                'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-            ], 500);
         }
     }
 
@@ -250,17 +246,9 @@ abstract class BaseCrudController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
-            // Log the error with context
-            Log::error('Failed to create record: ' . $e->getMessage(), [
-                'model' => get_class($this->model),
+            return $this->handleException($e, 'create record', [
                 'request_data' => request()->all()
             ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create record',
-                'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-            ], 500);
         }
     }
 
@@ -282,24 +270,10 @@ abstract class BaseCrudController extends Controller
                 'data' => $this->getResourceClass()::make($record)
             ], 200);
 
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Record not found'
-            ], 404);
-
         } catch (\Exception $e) {
-            // Log unexpected errors
-            Log::error('Error retrieving record: ' . $e->getMessage(), [
-                'model' => get_class($this->model),
+            return $this->handleException($e, 'retrieve record', [
                 'id' => $id
             ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve record',
-                'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-            ], 500);
         }
     }
 
@@ -333,8 +307,6 @@ abstract class BaseCrudController extends Controller
                 $validatedData = $currentRequest->all();
             }
 
-            // Find the record to update
-
             // Update the record with validated data
             $record->update($validatedData);
 
@@ -352,25 +324,11 @@ abstract class BaseCrudController extends Controller
                 'data' => $this->getResourceClass()::make($record->fresh())
             ], 200);
 
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Record not found'
-            ], 404);
-
         } catch (\Exception $e) {
-            // Log the error with context
-            Log::error('Failed to update record: ' . $e->getMessage(), [
-                'model' => get_class($this->model),
+            return $this->handleException($e, 'update record', [
                 'id' => $id,
                 'request_data' => request()->all()
             ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update record',
-                'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-            ], 500);
         }
     }
 
@@ -406,24 +364,10 @@ abstract class BaseCrudController extends Controller
                 'message' => 'Record deleted successfully'
             ], 200);
 
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Record not found'
-            ], 404);
-
         } catch (\Exception $e) {
-            // Log the error with context
-            Log::error('Failed to delete record: ' . $e->getMessage(), [
-                'model' => get_class($this->model),
+            return $this->handleException($e, 'delete record', [
                 'id' => $id
             ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete record',
-                'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-            ], 500);
         }
     }
 
@@ -452,6 +396,13 @@ abstract class BaseCrudController extends Controller
             }
 
             $ids = $currentRequest->ids;
+
+            // Check authorization for each record
+            $records = $this->model->whereIn('id', $ids)->get();
+            foreach ($records as $record) {
+                $this->authorize('delete', $record);
+            }
+
             $deletedCount = $this->model->whereIn('id', $ids)->delete();
 
             // Log bulk deletion
@@ -469,16 +420,9 @@ abstract class BaseCrudController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error('Bulk deletion failed: ' . $e->getMessage(), [
-                'model' => get_class($this->model),
+            return $this->handleException($e, 'delete records', [
                 'request_data' => request()->all()
             ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete records',
-                'error' => config('app.debug') ? $e->getMessage() : 'Something went wrong'
-            ], 500);
         }
     }
 }
