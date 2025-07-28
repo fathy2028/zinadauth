@@ -21,4 +21,5 @@ Route::group(['as' => 'api.'], static function () {
     require __DIR__ . '/api.routes/workshop.php';
     require __DIR__ . '/api.routes/question.php';
     require __DIR__ . '/api.routes/admin.php';
+    require __DIR__ . '/api.routes/assignment.php';
 });
