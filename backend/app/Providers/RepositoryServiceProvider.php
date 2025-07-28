@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\SettingRepository;
 use App\Repositories\Eloquent\WorkshopRepository;
+use App\Repositories\Interfaces\SettingRepositoryInterface;
 use App\Repositories\Interfaces\WorkshopRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Interfaces\UserRepositoryInterface;
@@ -24,7 +26,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(QuestionRepositoryInterface::class, QuestionRepository::class);
         $this->app->bind(WorkshopRepositoryInterface::class, WorkshopRepository::class);
-        $this->app->bind(AssignmentRepositoryInterface::class, AssignmentRepository::class);}
+        $this->app->bind(AssignmentRepositoryInterface::class, AssignmentRepository::class);
+        $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
+    }
 
     /**
      * Bootstrap services.
