@@ -62,4 +62,12 @@ class Workshop extends Model
     {
         return $this->belongsTo(Setting::class);
     }
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function (Model $model) {
+            $model->pin_code = rand(100000, 999999);
+        });
+    }
 }

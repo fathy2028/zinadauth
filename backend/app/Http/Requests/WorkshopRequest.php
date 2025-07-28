@@ -30,7 +30,7 @@ class WorkshopRequest extends FormRequest
             'description' => [$requiredOrNot, 'string', 'max:1024'],
             'start_at' => [$requiredOrNot, 'date:date_format:Y-m-d', 'after_or_equal:today'],
             'end_at' => [$requiredOrNot, 'date:date_format:Y-m-d', 'after:start_at'],
-            'pin_code' => [$requiredOrNot, 'string', 'max:6', 'regex:/^[0-9]{6}$/', 'unique:workshops,pin_code'],
+            'pin_code' => ['sometimes', 'string', 'max:6', 'regex:/^[0-9]{6}$/', 'unique:workshops,pin_code'],
             'qr_status' => [$requiredOrNot, 'boolean'],
             'status' => [$requiredOrNot, 'in:'. implode(',', WorkshopStatusTypeEnum::values())],
         ];
