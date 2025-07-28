@@ -72,12 +72,10 @@
 									]
 								},
 								"url": {
-									"raw": "http://localhost:8000/api/register",
-									"protocol": "http",
+									"raw": "{{baseURL}}/api/register",
 									"host": [
-										"localhost"
+										"{{baseURL}}"
 									],
-									"port": "8000",
 									"path": [
 										"api",
 										"register"
@@ -432,12 +430,10 @@
 								"method": "POST",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8000/api/logout",
-									"protocol": "http",
+									"raw": "{{baseURL}}/api/logout",
 									"host": [
-										"localhost"
+										"{{baseURL}}"
 									],
-									"port": "8000",
 									"path": [
 										"api",
 										"logout"
@@ -1880,6 +1876,417 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"success\": false,\n    \"message\": \"Record not found\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Template",
+			"item": [
+				{
+					"name": "Get Templates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/templates",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"templates"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/templates",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"templates"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 28 Jul 2025 16:59:54 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Records retrieved successfully\",\n    \"data\": [\n        {\n            \"id\": \"019851f8-6751-7307-899c-86ff92575667\",\n            \"title\": \"This is a title\",\n            \"description\": \"This is a description\",\n            \"setting_id\": \"019851f7-b1a0-71a8-b12b-c8110d9a1ca2\",\n            \"created_at\": \"2025-07-28T16:58:10.000000Z\"\n        }\n    ],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 15,\n        \"total\": 1,\n        \"from\": 1,\n        \"to\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Template by Id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/templates/019851f8-6751-7307-899c-86ff92575667",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"templates",
+										"019851f8-6751-7307-899c-86ff92575667"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 28 Jul 2025 16:59:39 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record found successfully\",\n    \"data\": {\n        \"id\": \"019851f8-6751-7307-899c-86ff92575667\",\n        \"title\": \"This is a title\",\n        \"description\": \"This is a description\",\n        \"setting_id\": \"019851f7-b1a0-71a8-b12b-c8110d9a1ca2\",\n        \"created_at\": \"2025-07-28T16:58:10.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Store Template for an entity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"This is a title\",\n    \"title_ar\": \"هذا هو العنوان\",\n    \"description\": \"This is a description\",\n    \"description_ar\": \"هذا هو الوصف\",\n    \"setting_id\": \"019851f7-b1a0-71a8-b12b-c8110d9a1ca2\",\n    \"linkable_type\": \"workshop\",\n    \"linkable_id\": \"019851f7-5284-7250-8880-a219cd26ebfa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/templates",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"templates"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"This is a title\",\n    \"title_ar\": \"هذا هو العنوان\",\n    \"description\": \"This is a description\",\n    \"description_ar\": \"هذا هو الوصف\",\n    \"setting_id\": \"019851f7-b1a0-71a8-b12b-c8110d9a1ca2\",\n    \"linkable_type\": \"workshop\",\n    \"linkable_id\": \"019851f7-5284-7250-8880-a219cd26ebfa\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/templates",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"templates"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 28 Jul 2025 20:19:29 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Template created successfully.\",\n    \"data\": {\n        \"id\": \"019852b0-b544-72d6-a82c-7c63c69f71e9\",\n        \"title\": \"This is a title\",\n        \"description\": \"This is a description\",\n        \"setting_id\": \"019851f7-b1a0-71a8-b12b-c8110d9a1ca2\",\n        \"linkable\": {\n            \"id\": \"019851f7-5284-7250-8880-a219cd26ebfa\",\n            \"title\": \"This is a third title\",\n            \"description\": \"This is a third description\",\n            \"start_at\": \"2025-12-23T00:00:00.000000Z\",\n            \"end_at\": \"2025-12-25T00:00:00.000000Z\",\n            \"created_by\": \"019851ea-682c-7297-9072-54e0220fb434\",\n            \"setting_id\": \"019851f7-b1a0-71a8-b12b-c8110d9a1ca2\",\n            \"is_deleted\": false,\n            \"qr_status\": false,\n            \"status\": \"active\",\n            \"pin_code\": 793894,\n            \"created_at\": \"2025-07-28T16:56:59.000000Z\",\n            \"updated_at\": \"2025-07-28T16:57:24.000000Z\"\n        },\n        \"created_at\": \"2025-07-28T20:19:29.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Template",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"This is a title edited\"\n    // \"title_ar\": \"هذا هو العنوان\",\n    // \"description\": \"This is a description\",\n    // \"description_ar\": \"هذا هو الوصف\",\n    // \"setting_id\": \"019851f7-b1a0-71a8-b12b-c8110d9a1ca2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/templates/019851f8-6751-7307-899c-86ff92575667",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"templates",
+								"019851f8-6751-7307-899c-86ff92575667"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"This is a title edited\"\n    // \"title_ar\": \"هذا هو العنوان\",\n    // \"description\": \"This is a description\",\n    // \"description_ar\": \"هذا هو الوصف\",\n    // \"setting_id\": \"019851f7-b1a0-71a8-b12b-c8110d9a1ca2\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/templates/019851f8-6751-7307-899c-86ff92575667",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"templates",
+										"019851f8-6751-7307-899c-86ff92575667"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 28 Jul 2025 17:02:20 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record updated successfully\",\n    \"data\": {\n        \"id\": \"019851f8-6751-7307-899c-86ff92575667\",\n        \"title\": \"This is a title edited\",\n        \"description\": \"This is a description\",\n        \"setting_id\": \"019851f7-b1a0-71a8-b12b-c8110d9a1ca2\",\n        \"created_at\": \"2025-07-28T16:58:10.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Template",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/templates/019851f8-6751-7307-899c-86ff92575667",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"templates",
+								"019851f8-6751-7307-899c-86ff92575667"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/templates/019851f8-6751-7307-899c-86ff92575667",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"templates",
+										"019851f8-6751-7307-899c-86ff92575667"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 28 Jul 2025 17:03:09 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Record deleted successfully\"\n}"
 						}
 					]
 				}
