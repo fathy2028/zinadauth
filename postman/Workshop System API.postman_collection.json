@@ -4,7 +4,7 @@
 		"name": "Workshop System API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "46935019",
-		"_collection_link": "https://zinad-team.postman.co/workspace/7407359a-0139-4836-86f4-cf7503c22321/collection/46935019-d82a3246-d1c7-4241-8144-cf92f5093a11?action=share&source=collection_link&creator=46935019"
+		"_collection_link": "https://zinad-team.postman.co/workspace/Team-Workspace~7407359a-0139-4836-86f4-cf7503c22321/collection/46935019-d82a3246-d1c7-4241-8144-cf92f5093a11?action=share&source=collection_link&creator=46935019"
 	},
 	"item": [
 		{
@@ -1209,6 +1209,190 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"success\": false,\n    \"message\": \"Record not found\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Store Workshop Settings",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "client",
+									"value": "This is a client Text",
+									"type": "text"
+								},
+								{
+									"key": "logo",
+									"type": "file",
+									"src": "/home/ahmedelazony/Downloads/test.jpeg"
+								},
+								{
+									"key": "primary_color",
+									"value": "#4287f5",
+									"type": "text"
+								},
+								{
+									"key": "secondary_color",
+									"value": "#dedfe0",
+									"type": "text"
+								},
+								{
+									"key": "dark_primary_color",
+									"value": "#0c1d38",
+									"type": "text"
+								},
+								{
+									"key": "dark_secondary_color",
+									"value": "#464747",
+									"type": "text"
+								},
+								{
+									"key": "lang",
+									"value": "en",
+									"type": "text"
+								},
+								{
+									"key": "domain_name",
+									"value": "zinad.net",
+									"type": "text"
+								},
+								{
+									"key": "duration",
+									"value": "26",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/workshops/01985007-ae83-70b9-a6ef-ce7d9e4afa62/settings",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"workshops",
+								"01985007-ae83-70b9-a6ef-ce7d9e4afa62",
+								"settings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "client",
+											"value": "This is a client Text",
+											"type": "text"
+										},
+										{
+											"key": "logo",
+											"type": "file",
+											"src": "/home/ahmedelazony/Downloads/test.jpeg"
+										},
+										{
+											"key": "primary_color",
+											"value": "#4287f5",
+											"type": "text"
+										},
+										{
+											"key": "secondary_color",
+											"value": "#dedfe0",
+											"type": "text"
+										},
+										{
+											"key": "dark_primary_color",
+											"value": "#0c1d38",
+											"type": "text"
+										},
+										{
+											"key": "dark_secondary_color",
+											"value": "#464747",
+											"type": "text"
+										},
+										{
+											"key": "lang",
+											"value": "en",
+											"type": "text"
+										},
+										{
+											"key": "domain_name",
+											"value": "zinad.net",
+											"type": "text"
+										},
+										{
+											"key": "duration",
+											"value": "26",
+											"type": "text"
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/workshops/01985007-ae83-70b9-a6ef-ce7d9e4afa62/settings",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"workshops",
+										"01985007-ae83-70b9-a6ef-ce7d9e4afa62",
+										"settings"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.29.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 28 Jul 2025 08:59:19 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Setting created successfully.\",\n    \"data\": {\n        \"id\": \"01985041-ffd9-71d1-b8da-a07e132da362\",\n        \"client\": \"This is a client Text\",\n        \"logo\": \"http://localhost:8000/workshop/logo/mpuHg09Eh3FQqNNc3vREkaUrPOOSmDaqWTBtZ1Wu.jpg\",\n        \"primary_color\": \"#4287f5\",\n        \"secondary_color\": \"#dedfe0\",\n        \"dark_primary_color\": \"#0c1d38\",\n        \"dark_secondary_color\": \"#464747\",\n        \"lang\": \"en\",\n        \"domain_name\": \"zinad.net\",\n        \"duration\": \"26\",\n        \"created_at\": \"2025-07-28T08:59:19.000000Z\"\n    }\n}"
 						}
 					]
 				}
