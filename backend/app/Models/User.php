@@ -33,7 +33,6 @@ class User extends Authenticatable implements JWTSubject
         'image',
         'type',
         'theme',
-        'user_id',
         'web_engine',
         'is_active',
         'is_deleted',
@@ -61,7 +60,6 @@ class User extends Authenticatable implements JWTSubject
         'is_active' => 'boolean',
         'is_deleted' => 'boolean',
         'id' => 'string',
-        'user_id' => 'string',
     ];
 
     /**
