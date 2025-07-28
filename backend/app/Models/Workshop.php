@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class Workshop extends Model
@@ -41,7 +42,7 @@ class Workshop extends Model
     {
         return $this->belongsToMany(User::class, 'user_workshops')
             ->using(new class extends Pivot {
-                use HasUuids;
+            use HasUuids;
             })->withPivot(['status']);
     }
 
@@ -49,13 +50,13 @@ class Workshop extends Model
     {
         return $this->belongsToMany(Assignment::class, 'assignment_workshops')
             ->using(new class extends Pivot {
-                use HasUuids;
+            use HasUuids;
             })->withPivot([
-                'status',
-                'assignment_type',
-                'qr_status',
-                'order_num',
-            ]);
+                    'status',
+                    'assignment_type',
+                    'qr_status',
+                    'order_num',
+                ]);
     }
 
     public function setting(): BelongsTo
@@ -69,5 +70,10 @@ class Workshop extends Model
         static::creating(function (Model $model) {
             $model->pin_code = rand(100000, 999999);
         });
+    }
+
+    public function templateLink(): MorphMany
+    {
+        return $this->morphMany(TemplateLink::class, 'linkable');
     }
 }
