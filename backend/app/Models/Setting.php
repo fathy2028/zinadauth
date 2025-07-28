@@ -25,4 +25,9 @@ class Setting extends Model
     {
         return $this->hasMany(Workshop::class);
     }
+
+    public function templates(): HasMany
+    {
+        return $this->hasMany(Template::class);
+    }
 }
