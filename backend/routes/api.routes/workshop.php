@@ -9,4 +9,7 @@ Route::group(['prefix' => 'workshops', 'as' => 'workshop.', 'middleware' => 'aut
     Route::post('/', [WorkshopController::class, 'store'])->name('store');
     Route::put('/{id}', [WorkshopController::class, 'update'])->name('update');
     Route::delete('/{id}', [WorkshopController::class, 'destroy'])->name('destroy');
+
+    Route::post('/{workshop}/settings', [WorkshopController::class, 'storeSettings'])
+        ->name('settings');
 });
