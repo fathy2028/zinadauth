@@ -8,6 +8,7 @@ use App\Support\Traits\UseCommonScopes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -55,5 +56,18 @@ class Workshop extends Model
                 'qr_status',
                 'order_num',
             ]);
+    }
+
+    public function setting(): BelongsTo
+    {
+        return $this->belongsTo(Setting::class);
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function (Model $model) {
+            $model->pin_code = rand(100000, 999999);
+        });
     }
 }
