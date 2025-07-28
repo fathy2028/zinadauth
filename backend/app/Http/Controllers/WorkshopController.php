@@ -7,19 +7,19 @@ use App\Http\Requests\WorkshopRequest;
 use App\Http\Resources\SettingResource;
 use App\Http\Resources\WorkshopResource;
 use App\Http\Responses\ApiResponse;
-use App\Models\Setting;
 use App\Models\Workshop;
+use App\Repositories\Eloquent\SettingRepository;
+use App\Repositories\Interfaces\SettingRepositoryInterface;
 use App\Repositories\Interfaces\WorkshopRepositoryInterface;
-use App\Support\Traits\HandlesFormRequests;
 use App\Support\Traits\UploadsFiles;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class WorkshopController extends BaseCrudController
 {
-    use UploadsFiles;
-    public function __construct(protected WorkshopRepositoryInterface $workshopRepository)
+    public function __construct(
+        protected WorkshopRepositoryInterface $workshopRepository,
+        protected SettingRepositoryInterface $settingRepository
+    )
     {
         parent::__construct();
     }
@@ -44,12 +44,8 @@ class WorkshopController extends BaseCrudController
         try {
             $this->authorize('edit', $workshop);
 
-            $data = $request->validated();
-            if (isset($request->logo)) {
-                $data['logo'] = $this->storeFile('public', 'workshop/settings/logo', $request->logo);
-            }
-
-            $setting = $workshop->setting()->create($data);
+            $setting = $this->settingRepository->createWithLogo($request->validated(), $request->logo);
+            $this->workshopRepository->assignSetting($workshop, $setting);
 
             return ApiResponse::success(
                 SettingResource::make($setting),
