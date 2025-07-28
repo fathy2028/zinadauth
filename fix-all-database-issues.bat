@@ -107,12 +107,8 @@ echo - Frontend: http://localhost:4200
 echo - Backend:  http://localhost:8000
 echo.
 echo Default test users created:
-echo - Super Admin: superadmin@zinadauth.com (password123)
 echo - Admin: admin@zinadauth.com (password123)
-echo - Educational Director: director@zinadauth.com (password123)
-echo - Department Head: depthead@zinadauth.com (password123)
 echo - Facilitator: facilitator@zinadauth.com (password123)
-echo - Content Creator: creator@zinadauth.com (password123)
 echo - Participant: participant@zinadauth.com (password123)
 echo.
 echo Roles and Permissions system is ready!
