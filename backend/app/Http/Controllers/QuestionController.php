@@ -26,8 +26,8 @@ class QuestionController extends BaseCrudController
      */
     public function __construct(QuestionRepositoryInterface $questionRepository)
     {
-        parent::__construct();
         $this->questionRepository = $questionRepository;
+        parent::__construct();
     }
 
     /**
@@ -92,54 +92,17 @@ class QuestionController extends BaseCrudController
     }
 
     /**
+     * Get the repository instance for BaseCrudController
+     */
+    protected function getRepository()
+    {
+        return $this->questionRepository;
+    }
+
+    /**
      * Display a listing of questions with advanced filtering
      */
-    public function index(): JsonResponse
-    {
-        try {
-            // Check authorization
-            $this->authorize('viewAny', Question::class);
-
-            // Get the form request instance (QuestionSearchRequest)
-            $request = $this->resolveFormRequest('index');
-
-            $filters = [
-                'type' => $request->get('type'),
-                'created_by' => $request->get('created_by'),
-                'min_points' => $request->get('min_points'),
-                'max_points' => $request->get('max_points'),
-                'min_duration' => $request->get('min_duration'),
-                'max_duration' => $request->get('max_duration'),
-                'search' => $request->get('search'),
-            ];
-
-            // Remove null filters
-            $filters = array_filter($filters, fn($value) => $value !== null);
-
-            $perPage = min($request->get('per_page', 15), 50);
-            $questions = $this->questionRepository->getPaginated($filters, $perPage);
-
-            // Determine if user can see answers
-            $includeAnswers = $request->get('include_answers', false) && $this->canViewAnswers();
-
-            return ApiResponse::success([
-                'questions' => QuestionResource::collection($questions->items())->additional([
-                    'meta' => ['include_answers' => $includeAnswers]
-                ]),
-                'pagination' => [
-                    'current_page' => $questions->currentPage(),
-                    'last_page' => $questions->lastPage(),
-                    'per_page' => $questions->perPage(),
-                    'total' => $questions->total(),
-                    'from' => $questions->firstItem(),
-                    'to' => $questions->lastItem(),
-                ]
-            ], 'Questions retrieved successfully');
-
-        } catch (Exception $e) {
-            return ApiResponse::error('Failed to retrieve questions', 500, ['exception' => $e->getMessage()]);
-        }
-    }
+ 
 
     /**
      * Store a new question
@@ -234,43 +197,10 @@ class QuestionController extends BaseCrudController
     /**
      * Update the specified question
      */
-    public function update($id): JsonResponse
+    public function updateQuestion(QuestionRequest $request, $id): JsonResponse
     {
-        // Find the question first for authorization
-        $question = $this->questionRepository->find($id);
-
-        if (!$question) {
-            return ApiResponse::error('Question not found', 404);
-        }
-
-        // Check authorization
-        $this->authorize('update', $question);
-
-        try {
-
-            // Get the form request instance (QuestionRequest)
-            $request = $this->resolveFormRequest('update');
-
-            // Get validated data
-            $validatedData = $request->validated();
-
-            // Update question using repository
-            $question = $this->questionRepository->updateQuestion($id, $validatedData);
-
-            // Load relationships
-            $question->load(['creator', 'assignments']);
-
-            return ApiResponse::success(
-                new QuestionResource($question),
-                'Question updated successfully'
-            );
-
-        } catch (Exception $e) {
-            if (str_contains($e->getMessage(), 'not found')) {
-                return ApiResponse::error('Question not found', 404);
-            }
-            return ApiResponse::error('Failed to update question', 500, ['exception' => $e->getMessage()]);
-        }
+        // Use the base controller's update method which now supports repositories
+        return parent::update($request->validated(), $id);
     }
 
     /**

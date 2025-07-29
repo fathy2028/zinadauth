@@ -12,8 +12,8 @@ Route::group(['prefix' => 'questions', 'as' => 'question.', 'middleware' => 'aut
     Route::get('/search', [QuestionController::class, 'search']);
     Route::post('/', [QuestionController::class, 'store']);
     Route::post('/{id}/duplicate', [QuestionController::class, 'duplicate']);
-    Route::put('/{id}', [QuestionController::class, 'update']);
-    Route::patch('/{id}', [QuestionController::class, 'update']);
+    Route::put('/{id}', [QuestionController::class, 'updateQuestion']);
+    Route::patch('/{id}', [QuestionController::class, 'updateQuestion']);
     Route::delete('/{id}', [QuestionController::class, 'destroy']);
     Route::post('/bulk-create', [QuestionController::class, 'bulkCreate']);
     Route::post('/bulk-delete', [QuestionController::class, 'bulkDelete']);

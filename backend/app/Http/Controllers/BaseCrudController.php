@@ -31,6 +31,11 @@ abstract class BaseCrudController extends Controller
     protected $model;
 
     /**
+     * The repository instance (optional)
+     */
+    protected $repository;
+
+    /**
      * Fields that can be searched
      */
     protected $searchableFields = ['name', 'title', 'description'];
@@ -61,6 +66,15 @@ abstract class BaseCrudController extends Controller
      * Get the Resource Class instance
      */
     abstract protected function getResourceClass(): string;
+
+    /**
+     * Get the repository instance (optional)
+     * Child controllers can override this to provide repository
+     */
+    protected function getRepository()
+    {
+        return null;
+    }
 
     /**
      * Get the form request class for index operations
@@ -116,6 +130,7 @@ abstract class BaseCrudController extends Controller
     public function __construct()
     {
         $this->model = $this->getModel();
+        $this->repository = $this->getRepository();
     }
 
 
@@ -230,7 +245,19 @@ abstract class BaseCrudController extends Controller
             }
 
             // Create the new record with validated data
-            $record = $this->model->create($validatedData);
+            // Use repository if available, otherwise use model directly
+            if ($this->repository) {
+                // Check for specialized create method first
+                if (method_exists($this->repository, 'createQuestion')) {
+                    $record = $this->repository->createQuestion($validatedData);
+                } elseif (method_exists($this->repository, 'create')) {
+                    $record = $this->repository->create($validatedData);
+                } else {
+                    $record = $this->model->create($validatedData);
+                }
+            } else {
+                $record = $this->model->create($validatedData);
+            }
 
             // Log the successful creation
             Log::info('New record created', [
@@ -261,7 +288,16 @@ abstract class BaseCrudController extends Controller
     public function show($id): JsonResponse
     {
         try {
-            $record = $this->model->findOrFail($id);
+            // Use repository if available, otherwise use model directly
+            if ($this->repository && method_exists($this->repository, 'find')) {
+                $record = $this->repository->find($id);
+                if (!$record) {
+                    throw new ModelNotFoundException();
+                }
+            } else {
+                $record = $this->model->findOrFail($id);
+            }
+
             $this->authorize('view', $record);
 
             return response()->json([
@@ -283,45 +319,53 @@ abstract class BaseCrudController extends Controller
      * This method finds a record by ID, validates the new data,
      * and updates the record with the validated information.
      */
-    public function update($id): JsonResponse
+    public function update($payload, $id): JsonResponse
     {
         try {
-            $record = $this->model->findOrFail($id);
-            $this->authorize('edit', $record);
-
-            // Use direct validation approach
-            $currentRequest = request();
-
-            // Get the form request class for update operation
-            $formRequestClass = $this->getUpdateFormRequestClass();
-
-            if (!empty($formRequestClass) && class_exists($formRequestClass)) {
-                // Get validation rules from the form request
-                $formRequest = new $formRequestClass();
-                $rules = $formRequest->rules();
-
-                // Validate the request data
-                $validatedData = $currentRequest->validate($rules);
+            // Find the record first
+            if ($this->repository && method_exists($this->repository, 'find')) {
+                $record = $this->repository->find($id);
+                if (!$record) {
+                    throw new ModelNotFoundException();
+                }
             } else {
-                // Fallback to all request data if no form request is defined
-                $validatedData = $currentRequest->all();
+                $record = $this->model->findOrFail($id);
             }
 
+            $this->authorize('update', $record);
+
+            // Use the provided payload as validated data
+            $validatedData = $payload;
+
             // Update the record with validated data
-            $record->update($validatedData);
+            // Use repository if available, otherwise use model directly
+            if ($this->repository) {
+                // Check for specialized update method first
+                if (method_exists($this->repository, 'updateQuestion')) {
+                    $updatedRecord = $this->repository->updateQuestion($id, $validatedData);
+                } elseif (method_exists($this->repository, 'update')) {
+                    $updatedRecord = $this->repository->update($id, $validatedData);
+                } else {
+                    $record->update($validatedData);
+                    $updatedRecord = $record->fresh();
+                }
+            } else {
+                $record->update($validatedData);
+                $updatedRecord = $record->fresh();
+            }
 
             // Log the successful update
             Log::info('Record updated', [
                 'model' => get_class($this->model),
-                'record_id' => $record->getKey(),
+                'record_id' => $updatedRecord->getKey(),
                 'updated_by' => auth()->id() ?? 'system'
             ]);
 
-            // Return the updated record (fresh from database)
+            // Return the updated record
             return response()->json([
                 'success' => true,
                 'message' => 'Record updated successfully',
-                'data' => $this->getResourceClass()::make($record->fresh())
+                'data' => $this->getResourceClass()::make($updatedRecord)
             ], 200);
 
         } catch (\Exception $e) {
@@ -342,7 +386,15 @@ abstract class BaseCrudController extends Controller
     {
         try {
             // Find the record to delete
-            $record = $this->model->findOrFail($id);
+            if ($this->repository && method_exists($this->repository, 'find')) {
+                $record = $this->repository->find($id);
+                if (!$record) {
+                    throw new ModelNotFoundException();
+                }
+            } else {
+                $record = $this->model->findOrFail($id);
+            }
+
             $this->authorize('delete', $record);
 
             // Store information for logging before deletion
@@ -350,7 +402,12 @@ abstract class BaseCrudController extends Controller
             $recordKey = $record->getKey();
 
             // Delete the record
-            $record->delete();
+            // Use repository if available, otherwise use model directly
+            if ($this->repository && method_exists($this->repository, 'delete')) {
+                $this->repository->delete($id);
+            } else {
+                $record->delete();
+            }
 
             // Log the successful deletion
             Log::info('Record deleted', [

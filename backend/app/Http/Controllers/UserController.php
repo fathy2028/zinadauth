@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Http\Resources\UserResource;
@@ -82,32 +83,9 @@ class UserController extends BaseCrudController
     /**
      * Override store method to use RegisterRequest and UserRepository
      */
-    public function store(): JsonResponse
+    public function storeUser(UserRequest $request): JsonResponse
     {
-        try {
-            // Get the form request instance (RegisterRequest)
-            $request = $this->resolveFormRequest('store');
-
-            $validatedData = $request->validated();
-
-            // Create user using repository (handles password hashing and role assignment)
-            $user = $this->userRepository->create($validatedData);
-
-            // Load user with roles for response
-            $user->load(['roles', 'permissions']);
-
-            return ApiResponse::success([
-                'user' => new UserResource($user),
-                'capabilities' => $user->getCapabilities(),
-            ], 'User created successfully', 201);
-
-        } catch (Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to create user: ' . $e->getMessage(), [
-                'request_data' => $request->all()
-            ]);
-
-            return ApiResponse::error('Failed to create user', 500, ['exception' => $e->getMessage()]);
-        }
+        return parent::store($request->validated());
     }
 
 
@@ -115,7 +93,7 @@ class UserController extends BaseCrudController
     /**
      * Override update method to use RegisterRequest and UserRepository
      */
-    public function update($id): JsonResponse
+    public function updateuser(UserRequest $request,$id): JsonResponse
     {
         try {
             // Get the form request instance (UserUpdateRequest)
